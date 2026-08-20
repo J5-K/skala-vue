@@ -1,5 +1,5 @@
 <!-- 실습 및 연습용 -->
-<script setup>
+<!-- <script setup>
 import SampleOne from './components/practices/basic/SampleOne.vue'
 import SampleTwo from './components/practices/basic/SampleTwo.vue'
 
@@ -71,21 +71,21 @@ import WatchersWatchEffect from './components/practices/composition/WatchersWatc
 
 <style>
 @import '@/assets/practice.css';
-</style>
+</style> -->
 
 <!-- 과제용 -->
-<!-- <script setup>
-import WeatherMockup from './components/exercise/WeatherMockup.vue'
+<script setup>
+import WeatherApp from './components/exercise/WeatherApp.vue'
 </script>
 
 <template>
   <div class="app-container">
-    <h1>⛅ 과제 1: 날씨 (Mockup)</h1>
+    <h1>⛅ 날씨 과제</h1>
     <hr />
-    <WeatherMockup />
+    <WeatherApp />
   </div>
 </template>
 
 <style>
 @import '@/assets/exercise.css';
-</style> -->
+</style>

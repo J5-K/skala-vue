@@ -8,13 +8,10 @@ const weatherList = ref([
 ])
 
 const searchQuery = ref('')
-const selectedCityInfo = ref('카드를 클릭하거나 검색하세요')
 const searchedCity = ref('')
+const selectedCityInfo = ref('카드를 클릭하거나 검색하세요')
 
-const showDetail = (cityName, status) => {
-  window.alert(`${cityName}의 현재 날씨는 [${status}] 상태입니다.`)
-}
-
+// [1일 차] 검색 버튼이나 Enter를 누르면 일치하는 도시를 찾습니다.
 const searchCity = () => {
   const query = searchQuery.value.trim()
 
@@ -35,30 +32,29 @@ const searchCity = () => {
   searchedCity.value = query
   selectedCityInfo.value = `"${query}" 검색 결과가 없습니다.`
 }
+
+const showDetail = (cityName, status) => {
+  window.alert(`${cityName}의 현재 날씨는 [${status}] 상태입니다.`)
+}
 </script>
 
 <template>
   <div class="dashboard-wrapper">
     <section class="search-box">
       <h3>🔎 도시 검색</h3>
-      <!-- <input
-        type="text"
-        :value="searchQuery"
-        @input="(e) => (searchQuery = e.target.value)"
-        placeholder="검색할 도시 입력"
-      /> -->
       <input
         type="text"
         v-model.trim="searchQuery"
         placeholder="판교, 울산, 광주 중 입력"
         @keyup.enter="searchCity"
       />
-
       <button @click="searchCity">검색</button>
+
       <p>
         검색 중인 도시: <strong>{{ searchQuery }}</strong>
       </p>
     </section>
+
     <section class="list-box">
       <h3>🌆 지역별 날씨 현황</h3>
       <div
@@ -73,9 +69,7 @@ const searchCity = () => {
 
         <div class="temp-controller" @click.stop>
           <button @click="item.temp--">-</button>
-
           <input type="number" v-model.number="item.temp" aria-label="현재 기온" />
-
           <button @click="item.temp++">+</button>
         </div>
 
@@ -95,27 +89,16 @@ const searchCity = () => {
 </template>
 
 <style>
-.search-control {
-  display: flex;
-  gap: 8px;
-}
-
-.search-control input {
-  flex: 1;
-  width: auto;
-}
-
-.search-control button,
-.temp-controller button {
-  padding: 6px 12px;
-  cursor: pointer;
-}
-
 .temp-controller {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-bottom: 10px;
+}
+
+.temp-controller button {
+  padding: 6px 12px;
+  cursor: pointer;
 }
 
 .temp-controller input {
