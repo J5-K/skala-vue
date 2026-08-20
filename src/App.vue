@@ -1,39 +1,40 @@
 <!-- 실습 및 연습용 -->
 <!-- <script setup>
-import SampleOne from './components/practices/basic/SampleOne.vue'
-import SampleTwo from './components/practices/basic/SampleTwo.vue'
+// import SampleOne from './components/practices/basic/SampleOne.vue'
+// import SampleTwo from './components/practices/basic/SampleTwo.vue'
 
-import VueHtml from './components/practices/basic/VueHtml.vue'
-import VueHtmlXss from './components/practices/basic/VueHtmlXss.vue'
-import VueText from './components/practices/basic/VueText.vue'
-import VueBind from './components/practices/basic/VueBind.vue'
-import VueBindClass from './components/practices/basic/VueBindClass.vue'
-import VueBindStyle from './components/practices/basic/VueBindStyle.vue'
-import VueBindShorthand from './components/practices/basic/VueBindShorthand.vue'
-import VueIf from './components/practices/basic/VueIf.vue'
-import VueShow from './components/practices/basic/VueShow.vue'
-import VueFor from './components/practices/basic/VueFor.vue'
-import EventBasic from './components/practices/basic/EventBasic.vue'
-import EventObject from './components/practices/basic/EventObject.vue'
-import EventObject2 from './components/practices/basic/EventObject2.vue'
-import EventModifier from './components/practices/basic/EventModifier.vue'
-import EventModifier2 from './components/practices/basic/EventModifier2.vue'
-import ModelBasic from './components/practices/basic/ModelBasic.vue'
-import ModelForm from './components/practices/basic/ModelForm.vue'
-import ModelModifier from './components/practices/basic/ModelModifier.vue'
+// import VueHtml from './components/practices/basic/VueHtml.vue'
+// import VueHtmlXss from './components/practices/basic/VueHtmlXss.vue'
+// import VueText from './components/practices/basic/VueText.vue'
+// import VueBind from './components/practices/basic/VueBind.vue'
+// import VueBindClass from './components/practices/basic/VueBindClass.vue'
+// import VueBindStyle from './components/practices/basic/VueBindStyle.vue'
+// import VueBindShorthand from './components/practices/basic/VueBindShorthand.vue'
+// import VueIf from './components/practices/basic/VueIf.vue'
+// import VueShow from './components/practices/basic/VueShow.vue'
+// import VueFor from './components/practices/basic/VueFor.vue'
+// import EventBasic from './components/practices/basic/EventBasic.vue'
+// import EventObject from './components/practices/basic/EventObject.vue'
+// import EventObject2 from './components/practices/basic/EventObject2.vue'
+// import EventModifier from './components/practices/basic/EventModifier.vue'
+// import EventModifier2 from './components/practices/basic/EventModifier2.vue'
+// import ModelBasic from './components/practices/basic/ModelBasic.vue'
+// import ModelForm from './components/practices/basic/ModelForm.vue'
+// import ModelModifier from './components/practices/basic/ModelModifier.vue'
 
-import ReactiveRef from './components/practices/composition/ReactiveRef.vue'
-import ReactiveReactive from './components/practices/composition/ReactiveReactive.vue'
-import ComputedBasic from './components/practices/composition/ComputedBasic.vue'
-import WatchersBasic from './components/practices/composition/WatchersBasic.vue'
-import WatchersMulti from './components/practices/composition/WatchersMulti.vue'
-import WatchersDeep from './components/practices/composition/WatchersDeep.vue'
-import WatchersRefArray from './components/practices/composition/WatchersRefArray.vue'
-import WatchersWatchEffect from './components/practices/composition/WatchersWatchEffect.vue'
+// import ReactiveRef from './components/practices/composition/ReactiveRef.vue'
+// import ReactiveReactive from './components/practices/composition/ReactiveReactive.vue'
+// import ComputedBasic from './components/practices/composition/ComputedBasic.vue'
+// import WatchersBasic from './components/practices/composition/WatchersBasic.vue'
+// import WatchersMulti from './components/practices/composition/WatchersMulti.vue'
+// import WatchersDeep from './components/practices/composition/WatchersDeep.vue'
+// import WatchersRefArray from './components/practices/composition/WatchersRefArray.vue'
+// import WatchersWatchEffect from './components/practices/composition/WatchersWatchEffect.vue'
+
 </script>
 
 <template>
-  <SampleOne />
+  <!-- <SampleOne />
   <SampleTwo />
   <VueHtml />
   <VueHtmlXss />
@@ -75,14 +76,14 @@ import WatchersWatchEffect from './components/practices/composition/WatchersWatc
 
 <!-- 과제용 -->
 <script setup>
-import WeatherApp from './components/exercise/WeatherApp.vue'
+import WeatherParent from './components/exercise/WeatherParent.vue'
 </script>
 
 <template>
   <div class="app-container">
     <h1>⛅ 날씨 과제</h1>
     <hr />
-    <WeatherApp />
+    <WeatherParent />
   </div>
 </template>
 
