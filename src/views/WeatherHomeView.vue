@@ -2,13 +2,16 @@
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import { useLocationStore } from '@/stores/locationStore'
 
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
+import CommuteGuide from '../components/exercise/CommuteGuide.vue'
 import SearchBar from '../components/exercise/SearchBar.vue'
 import WeatherCard from '../components/exercise/WeatherCard.vue'
 
 const router = useRouter()
 const route = useRoute()
+const locationStore = useLocationStore()
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather'
@@ -53,6 +56,10 @@ const averageTemperature = computed(() => {
   return (total / weatherList.value.length).toFixed(1)
 })
 
+const myCity = computed(() => {
+  return weatherList.value.find((city) => city.id === locationStore.selectedCityId) ?? null
+})
+
 // 도시 좌표를 순회하며 세 도시의 실제 날씨를 동시에 요청합니다.
 const fetchRealTimeWeather = async () => {
   isLoading.value = true
@@ -79,8 +86,10 @@ const fetchRealTimeWeather = async () => {
       temp: Math.round(response.data.main.temp),
       feelsLike: Math.round(response.data.main.feels_like),
       status: response.data.weather[0].description,
+      weatherMain: response.data.weather[0].main,
       humidity: response.data.main.humidity,
       wind: response.data.wind.speed,
+      precipitation: response.data.rain?.['1h'] ?? response.data.snow?.['1h'] ?? 0,
     }))
   } catch (error) {
     console.error('날씨 API 요청 실패:', error)
@@ -123,6 +132,11 @@ const updateQuery = (query) => {
 
 const selectCard = (city) => {
   selectedCityInfo.value = `${city.name}의 날씨가 궁금하신가요?`
+}
+
+const setMyLocation = (city) => {
+  locationStore.selectLocation(city.id)
+  selectedCityInfo.value = `${city.name}을(를) 내 지역으로 설정했습니다.`
 }
 
 const clickDetail = (city) => {
@@ -191,10 +205,12 @@ const updateTemperature = ({ cityId, temperature }) => {
           :key="item.id"
           :city-item="item"
           :hot-threshold="hotThreshold"
+          :is-my-location="locationStore.selectedCityId === item.id"
           @select-card="selectCard"
           @click-detail="clickDetail"
           @change-temperature="changeTemperature"
           @update-temperature="updateTemperature"
+          @set-my-location="setMyLocation"
         />
 
         <p v-if="filteredWeatherList.length === 0" class="empty-message">
@@ -202,6 +218,8 @@ const updateTemperature = ({ cityId, temperature }) => {
         </p>
       </template>
     </BaseDashboardCard>
+
+    <CommuteGuide :city="myCity" />
 
     <div class="status-bar">
       {{ selectedCityInfo }}

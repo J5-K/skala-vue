@@ -13,6 +13,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  isMyLocation: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits([
@@ -20,6 +24,7 @@ const emit = defineEmits([
   'click-detail',
   'change-temperature',
   'update-temperature',
+  'set-my-location',
 ])
 
 const changeTemperature = (amount) => {
@@ -74,6 +79,15 @@ const displayFeelsLike = computed(() => {
       🥵 더워요 ({{ hotThreshold }}도 이상)
     </span>
     <span v-else class="badge cool">🆒 선선함 ({{ hotThreshold }}도 미만)</span>
+
+    <button
+      class="location-btn"
+      :class="{ selected: isMyLocation }"
+      type="button"
+      @click.stop="emit('set-my-location', cityItem)"
+    >
+      {{ isMyLocation ? '📍 내 지역' : '내 지역 설정' }}
+    </button>
 
     <button class="btn-detail" @click.stop="emit('click-detail', cityItem)">상세보기</button>
   </div>
@@ -138,5 +152,21 @@ const displayFeelsLike = computed(() => {
   right: 12px;
   padding: 6px 10px;
   cursor: pointer;
+}
+
+.location-btn {
+  padding: 5px 9px;
+  margin-left: 8px;
+  color: #2c3e50;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #b2bec3;
+  border-radius: 4px;
+}
+
+.location-btn.selected {
+  color: #fff;
+  background: #00b894;
+  border-color: #00b894;
 }
 </style>
