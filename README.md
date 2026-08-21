@@ -6,8 +6,11 @@
 
 ```sh
 npm install
+cp .env.example .env.local
 npm run dev
 ```
+
+실행 전 `.env.local`의 `VITE_OPENWEATHER_API_KEY`에 발급받은 OpenWeather API 키를 입력합니다.
 
 ## 진행 현황
 
@@ -15,7 +18,7 @@ npm run dev
 | ----- | ---------------------------------------------- | ---- |
 | Day 1 | 도시 검색, 온도 조절, 반응형 배지              | 완료 |
 | Day 2 | 실시간 검색, 날씨 요약, watcher, 컴포넌트 분리 | 완료 |
-| Day 3 | Vue Router, URL 상태 연동, 추가 View           | 진행 중 |
+| Day 3 | Vue Router, Pinia, Axios 실시간 날씨           | 진행 중 |
 
 ---
 
@@ -152,6 +155,15 @@ WeatherParent가 상태 변경
 - 섭씨 원본 데이터는 유지하고 `convertTemperature()`로 표시 온도만 변환합니다.
 - 카드에서 온도를 변경해도 선택한 단위에 맞춰 표시 온도가 실시간 갱신됩니다.
 
+### 6. Axios를 활용한 실시간 날씨 연동
+
+- OpenWeather API를 호출해 판교·울산·광주의 실제 날씨를 카드에 표시합니다.
+- 도시 좌표 배열을 `map()`으로 순회하고 `Promise.all()`로 동시에 요청합니다.
+- API 응답을 기존 `WeatherCard`의 데이터 구조에 맞게 변환했습니다.
+- `isLoading`과 `errorMessage`로 로딩 및 통신 실패 상태를 처리했습니다.
+- API 온도는 섭씨로 저장하고 Pinia 설정에 따라 표시 단위만 변환합니다.
+- API 키는 `.env.local`에서 관리하고 Git 커밋에서 제외했습니다.
+
 ### Day 3 핵심 문법
 
 | 추가 기능 | 적용 내용 |
@@ -164,6 +176,8 @@ WeatherParent가 상태 변경
 | 잘못된 주소 처리 | Catch-all Route |
 | 전역 단위 상태 | `defineStore()`, Pinia |
 | 단위별 표시 온도 | `computed()`, `convertTemperature()` |
+| 여러 도시 동시 요청 | `axios`, `Promise.all()` |
+| API 실행 상태 처리 | `async/await`, `try/catch/finally` |
 
 > Day 3는 진행 중이며, 이후 구현 내용은 같은 항목에 이어서 추가할 예정입니다.
 
@@ -180,6 +194,7 @@ WeatherParent가 상태 변경
 - 홈에서 변경한 기온과 날씨 상태의 상세 화면 연동
 - 날씨 생활 정보 및 404 화면
 - 홈·상세 화면의 섭씨/화씨 단위 동기화
+- 판교·울산·광주의 실시간 날씨 및 API 로딩·오류 상태 표시
 
 ## 주요 파일
 
@@ -192,6 +207,8 @@ src/components/exercise/
 
 src/stores/
 └── configStore.js
+
+.env.example
 
 src/views/
 ├── WeatherHomeView.vue
