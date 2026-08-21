@@ -75,15 +75,21 @@
 </style> -->
 
 <!-- 과제용 -->
-<script setup>
-import WeatherParent from './components/exercise/WeatherParent.vue'
-</script>
-
 <template>
   <div class="app-container">
     <h1>⛅ 날씨 과제</h1>
     <hr />
-    <WeatherParent />
+    <nav class="navigation-bar">
+      <RouterLink to="/" class="nav-item">날씨 대시보드</RouterLink>
+      <span class="divider">|</span>
+      <RouterLink to="/about" class="nav-item">서비스소개</RouterLink>
+      <span class="divider">|</span>
+      <RouterLink to="/tips" class="nav-item">날씨 생활 정보</RouterLink>
+    </nav>
+
+    <main>
+      <RouterView />
+    </main>
   </div>
 </template>
 
