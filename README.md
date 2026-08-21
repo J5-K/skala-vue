@@ -299,7 +299,8 @@ http://localhost:5173/practice
 
 이 화면에서 Vue 기본 문법, 이벤트와 `v-model`, 반응형 상태, computed와 watcher, 컴포넌트 통신과 생명주기, Slot, Pinia, Axios 실습을 순서대로 확인할 수 있습니다.
 
-`PracticeView.vue`는 동적 import로 불러오고 제출용 내비게이션에는 링크를 표시하지 않았습니다. 덕분에 과제 화면은 그대로 유지하면서 필요할 때 주소로 실습 코드를 확인할 수 있습니다.
+`PracticeView.vue`는 동적 import로 불러오고 제출용 내비게이션에는 링크를 표시하지 않았습니다.
+과제 화면은 그대로 유지하면서 필요할 때 주소로 실습 코드를 확인할 수 있습니다.
 
 ## 주요 파일
 

@@ -106,7 +106,7 @@ const activities = {
       preparation: '날씨를 확인하고 목적지보다 기분 좋은 코스를 골라보세요.',
     },
     {
-      name: '가볍게 운동하기',
+      name: '가볍게 실내 운동하기',
       icon: '🏃',
       type: 'indoor',
       reason: '오늘 움직인 게 손가락뿐이었다면 이제 나머지 몸도 깨워줄 차례예요.',
@@ -174,16 +174,12 @@ const youtubeSearchUrl = computed(() => {
 })
 
 const showNextRecommendation = () => {
-  recommendationIndex.value =
-    (recommendationIndex.value + 1) % availableActivities.value.length
+  recommendationIndex.value = (recommendationIndex.value + 1) % availableActivities.value.length
 }
 
-watch(
-  [selectedDuration, () => props.city?.id, () => props.city?.weatherMain],
-  () => {
-    recommendationIndex.value = 0
-  },
-)
+watch([selectedDuration, () => props.city?.id, () => props.city?.weatherMain], () => {
+  recommendationIndex.value = 0
+})
 </script>
 
 <template>
