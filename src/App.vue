@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import UnitToggler from './components/exercise/UnitToggler.vue'
+</script>
+
 <!-- 실습 및 연습용 -->
 <!-- <script setup>
 // import SampleOne from './components/practices/basic/SampleOne.vue'
@@ -30,7 +34,6 @@
 // import WatchersDeep from './components/practices/composition/WatchersDeep.vue'
 // import WatchersRefArray from './components/practices/composition/WatchersRefArray.vue'
 // import WatchersWatchEffect from './components/practices/composition/WatchersWatchEffect.vue'
-
 </script>
 
 <template>
@@ -67,7 +70,7 @@
   <WatchersMulti />
   <WatchersDeep />
   <WatchersRefArray />
-  <WatchersWatchEffect />
+  <WatchersWatchEffect /> -->
 </template>
 
 <style>
@@ -85,6 +88,7 @@
       <RouterLink to="/about" class="nav-item">서비스소개</RouterLink>
       <span class="divider">|</span>
       <RouterLink to="/tips" class="nav-item">날씨 생활 정보</RouterLink>
+      <UnitToggler />
     </nav>
 
     <main>
