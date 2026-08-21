@@ -11,11 +11,11 @@ npm run dev
 
 ## 진행 현황
 
-| 구분 | 추가 구현 주제 | 상태 |
-| --- | --- | --- |
-| Day 1 | 도시 검색, 온도 조절, 반응형 배지 | 완료 |
+| 구분  | 추가 구현 주제                                 | 상태 |
+| ----- | ---------------------------------------------- | ---- |
+| Day 1 | 도시 검색, 온도 조절, 반응형 배지              | 완료 |
 | Day 2 | 실시간 검색, 날씨 요약, watcher, 컴포넌트 분리 | 완료 |
-| Day 3 | 다음 학습 내용을 적용해 추가 개발 | 예정 |
+| Day 3 | Vue Router, URL 상태 연동, 추가 View           | 진행 중 |
 
 ---
 
@@ -38,16 +38,16 @@ npm run dev
 
 ### Day 1 핵심 문법
 
-| 추가 기능 | 적용 내용 |
-| --- | --- |
-| 검색 상태 관리 | `ref()` |
-| 검색어 입력 | `v-model.trim` |
-| 검색 실행 | `@click`, `@keyup.enter` |
-| 검색 결과 표시 | `v-show` |
-| 카드 목록 출력 | `v-for`, `:key` |
-| 온도 입력 | `v-model.number` |
-| 배지 변경 | `v-if`, `v-else` |
-| 이벤트 전파 차단 | `@click.stop` |
+| 추가 기능        | 적용 내용                |
+| ---------------- | ------------------------ |
+| 검색 상태 관리   | `ref()`                  |
+| 검색어 입력      | `v-model.trim`           |
+| 검색 실행        | `@click`, `@keyup.enter` |
+| 검색 결과 표시   | `v-show`                 |
+| 카드 목록 출력   | `v-for`, `:key`          |
+| 온도 입력        | `v-model.number`         |
+| 배지 변경        | `v-if`, `v-else`         |
+| 이벤트 전파 차단 | `@click.stop`            |
 
 ---
 
@@ -55,7 +55,7 @@ npm run dev
 
 ### 1. `computed` 기반 실시간 검색
 
-- 검색 버튼 방식 대신 검색어가 바뀌면 결과가 자동 계산되도록 개선했습니다.
+- 기존의 `v-show` 검색 버튼 방식 대신 검색어가 바뀌면 결과가 자동 계산되도록 개선했습니다.
 - `includes()`를 적용해 도시 이름의 일부만 입력해도 검색할 수 있습니다.
 - 계산된 `filteredWeatherList`를 카드 목록에 직접 연결했습니다.
 - 검색 결과가 비어 있으면 별도의 안내 문구를 표시합니다.
@@ -78,12 +78,12 @@ npm run dev
 
 기존 기능은 유지하면서 화면을 다음 네 컴포넌트로 분리했습니다.
 
-| 컴포넌트 | 역할 |
-| --- | --- |
-| `WeatherParent.vue` | 모든 반응형 상태, computed, watcher와 이벤트 처리 유지 |
-| `BaseDashboardCard.vue` | 검색·기준 온도·목록 영역의 공통 디자인을 `<slot>`으로 제공 |
-| `SearchBar.vue` | 검색어를 props로 받고 `update-query` 이벤트로 부모에 전달 |
-| `WeatherCard.vue` | 도시와 기준 온도를 props로 받고 카드·상세보기·온도 변경 이벤트 전달 |
+| 컴포넌트                | 역할                                                                |
+| ----------------------- | ------------------------------------------------------------------- |
+| `WeatherParent.vue`     | 모든 반응형 상태, computed, watcher와 이벤트 처리 유지              |
+| `BaseDashboardCard.vue` | 검색·기준 온도·목록 영역의 공통 디자인을 `<slot>`으로 제공          |
+| `SearchBar.vue`         | 검색어를 props로 받고 `update-query` 이벤트로 부모에 전달           |
+| `WeatherCard.vue`       | 도시와 기준 온도를 props로 받고 카드·상세보기·온도 변경 이벤트 전달 |
 
 데이터는 다음과 같이 단방향으로 흐릅니다.
 
@@ -104,16 +104,59 @@ WeatherParent가 상태 변경
 
 ### Day 2 핵심 문법
 
+| 추가 기능              | 적용 내용        |
+| ---------------------- | ---------------- |
+| 실시간 검색 결과       | `computed()`     |
+| 더운 도시 수·평균 온도 | `computed()`     |
+| 기준 온도 변경 감지    | `watch()`        |
+| 검색어 자동 감지       | `watchEffect()`  |
+| 부모에서 자식으로 전달 | `defineProps()`  |
+| 자식에서 부모로 전달   | `defineEmits()`  |
+| 공통 레이아웃 재사용   | `<slot>`         |
+| 컴포넌트별 스타일 분리 | `<style scoped>` |
+
+## Day 3 — Vue Router와 화면 간 상태 연결 (진행 중)
+
+### 1. 날씨 화면을 View로 확장
+
+- 기존 날씨 대시보드 기능을 `WeatherHomeView.vue`로 옮겨 `/` 경로에서 표시했습니다.
+- `RouterLink`와 `RouterView`를 적용해 새로고침 없이 화면을 전환하도록 구성했습니다.
+- 각 화면은 동적 import를 사용해 필요한 시점에 불러오도록 설정했습니다.
+
+### 2. 검색어를 URL과 동기화
+
+- 검색어가 변경되면 `watch()`와 `router.replace()`로 `search` query에 저장합니다.
+- 페이지를 새로고침해도 URL의 검색어를 읽어 검색 상태를 복원합니다.
+- 검색 기록을 불필요하게 쌓지 않도록 검색 중에는 `replace()`를 사용했습니다.
+
+### 3. 변경된 날씨를 상세 페이지에 연동
+
+- 상세보기 클릭 시 도시 ID를 `/weather/:cityId`의 동적 params로 전달합니다.
+- 홈에서 변경한 현재 기온과 날씨 상태를 query로 함께 전달합니다.
+- 상세 화면에서는 params로 도시를 찾고 query를 조합해 변경된 값을 표시합니다.
+
+```text
+/weather/city_01?temp=30&status=맑음
+```
+
+### 4. 직접 추가한 화면과 예외 처리
+
+- `/tips`에 맑음·비·구름별 생활 수칙을 제공하는 화면을 추가했습니다.
+- 존재하지 않는 주소는 Catch-all Route로 `NotFoundView.vue`에 연결했습니다.
+- 소개·생활 정보·404 화면에 이름 기반 홈 이동 기능을 적용했습니다.
+
+### Day 3 핵심 문법
+
 | 추가 기능 | 적용 내용 |
 | --- | --- |
-| 실시간 검색 결과 | `computed()` |
-| 더운 도시 수·평균 온도 | `computed()` |
-| 기준 온도 변경 감지 | `watch()` |
-| 검색어 자동 감지 | `watchEffect()` |
-| 부모에서 자식으로 전달 | `defineProps()` |
-| 자식에서 부모로 전달 | `defineEmits()` |
-| 공통 레이아웃 재사용 | `<slot>` |
-| 컴포넌트별 스타일 분리 | `<style scoped>` |
+| 화면 전환 | `RouterLink`, `RouterView` |
+| 코드 분할 | 동적 `import()` |
+| 동적 상세 경로 | `route.params`, `router.push()` |
+| 화면 간 날씨 전달 | `route.query` |
+| 검색 상태 유지 | `watch()`, `router.replace()` |
+| 잘못된 주소 처리 | Catch-all Route |
+
+> Day 3는 진행 중이며, 이후 구현 내용은 같은 항목에 이어서 추가할 예정입니다.
 
 ## 현재 확인 가능한 기능
 
@@ -123,20 +166,23 @@ WeatherParent가 상태 변경
 - 전체 평균 온도와 더운 도시 수 표시
 - 카드별 온도 감소·증가 및 직접 입력
 - 기준 온도에 따른 배지 자동 변경
-- 카드 선택 상태 표시와 상세보기 알림
+- 카드 선택 상태 표시와 도시별 상세 화면 이동
+- 새로고침 후 검색어 복원
+- 홈에서 변경한 기온과 날씨 상태의 상세 화면 연동
+- 날씨 생활 정보 및 404 화면
 
 ## 주요 파일
 
 ```text
 src/components/exercise/
-├── WeatherParent.vue
 ├── BaseDashboardCard.vue
 ├── SearchBar.vue
 └── WeatherCard.vue
+
+src/views/
+├── WeatherHomeView.vue
+├── WeatherDetailView.vue
+├── WeatherAboutView.vue
+├── WeatherTipsView.vue
+└── NotFoundView.vue
 ```
-
----
-
-## Day 3 — 작성 예정
-
-다음 수업에서 배운 기능과 추가 구현 내용을 같은 형식으로 이어서 기록할 예정입니다.
