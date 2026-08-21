@@ -39,12 +39,25 @@ const updateTemperature = (event) => {
 const displayTemp = computed(() => {
   return configStore.convertTemperature(props.cityItem.temp)
 })
+
+const displayFeelsLike = computed(() => {
+  if (props.cityItem.feelsLike === undefined) {
+    return null
+  }
+
+  return configStore.convertTemperature(props.cityItem.feelsLike)
+})
 </script>
 
 <template>
   <div class="weather-card" @click="emit('select-card', cityItem)">
     <h4>{{ cityItem.name }} ({{ cityItem.status }})</h4>
     <p>현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
+    <div v-if="displayFeelsLike !== null" class="weather-details">
+      <span>체감 {{ displayFeelsLike }}{{ configStore.unitSymbol }}</span>
+      <span>습도 {{ cityItem.humidity }}%</span>
+      <span>풍속 {{ cityItem.wind }}m/s</span>
+    </div>
 
     <div class="temp-controller" @click.stop>
       <button @click="changeTemperature(-1)">-</button>
@@ -82,6 +95,15 @@ const displayTemp = computed(() => {
   align-items: center;
   gap: 6px;
   margin-bottom: 10px;
+}
+
+.weather-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-bottom: 10px;
+  color: #636e72;
+  font-size: 13px;
 }
 
 .temp-controller button {

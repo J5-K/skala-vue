@@ -77,6 +77,7 @@ const fetchRealTimeWeather = async () => {
       id: cityTargets[index].id,
       name: cityTargets[index].name,
       temp: Math.round(response.data.main.temp),
+      feelsLike: Math.round(response.data.main.feels_like),
       status: response.data.weather[0].description,
       humidity: response.data.main.humidity,
       wind: response.data.wind.speed,
