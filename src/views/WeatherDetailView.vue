@@ -196,30 +196,40 @@ const goHome = () => {
     <h3>📊 지역별 상세 기상 관측 정보</h3>
     <hr />
 
-    <p v-if="isLoading" class="loading-message">실시간 상세 날씨를 불러오는 중입니다...</p>
-    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <el-skeleton v-if="isLoading" :rows="4" animated />
+    <el-alert
+      v-if="errorMessage"
+      :title="errorMessage"
+      type="warning"
+      :closable="false"
+      show-icon
+    />
 
-    <div v-if="cityData" class="info-card">
+    <el-card v-if="cityData" class="info-card" shadow="never">
       <h4>📌 지정 지역: {{ cityData.name }}</h4>
-      <p>
-        실시간 기온: <strong>{{ displayTemp }}{{ configStore.unitSymbol }}</strong>
-      </p>
-      <p v-if="displayFeelsLike !== null">
-        체감 온도: <strong>{{ displayFeelsLike }}{{ configStore.unitSymbol }}</strong>
-      </p>
-      <p>기상 현황: {{ cityData.status }}</p>
-      <p>대기 습도: {{ cityData.humidity }}</p>
-      <p>현재 풍속: {{ cityData.wind }}</p>
-      <p v-if="cityData.sunrise">🌅 일출: {{ cityData.sunrise }}</p>
-      <p v-if="cityData.sunset">🌇 일몰: {{ cityData.sunset }}</p>
-    </div>
-    <div v-else>
-      <p>해당 지역의 상세 데이터 장부가 존재하지 않습니다.</p>
-    </div>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="실시간 기온">
+          {{ displayTemp }}{{ configStore.unitSymbol }}
+        </el-descriptions-item>
+        <el-descriptions-item v-if="displayFeelsLike !== null" label="체감 온도">
+          {{ displayFeelsLike }}{{ configStore.unitSymbol }}
+        </el-descriptions-item>
+        <el-descriptions-item label="기상 현황">{{ cityData.status }}</el-descriptions-item>
+        <el-descriptions-item label="대기 습도">{{ cityData.humidity }}</el-descriptions-item>
+        <el-descriptions-item label="현재 풍속">{{ cityData.wind }}</el-descriptions-item>
+        <el-descriptions-item v-if="cityData.sunrise" label="🌅 일출">
+          {{ cityData.sunrise }}
+        </el-descriptions-item>
+        <el-descriptions-item v-if="cityData.sunset" label="🌇 일몰">
+          {{ cityData.sunset }}
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-card>
+    <el-empty v-else description="해당 지역의 상세 데이터가 존재하지 않습니다." />
 
     <WeatherForecast v-if="forecastList.length > 0" :forecast-list="forecastList" />
 
-    <button class="back-btn" @click="goHome">← 메인 대시보드로 돌아가기</button>
+    <el-button type="primary" @click="goHome">← 메인 대시보드로 돌아가기</el-button>
   </div>
 </template>
 
@@ -232,23 +242,6 @@ const goHome = () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 .info-card {
-  background: #f1f2f6;
-  padding: 15px;
-  border-radius: 6px;
   margin: 15px 0;
-}
-.loading-message {
-  color: #3498db;
-}
-.error-message {
-  color: #e74c3c;
-}
-.back-btn {
-  padding: 8px 12px;
-  background: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
 }
 </style>

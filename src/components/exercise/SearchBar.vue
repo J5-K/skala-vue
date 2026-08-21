@@ -8,34 +8,22 @@ defineProps({
   },
 })
 
-const updateQuery = (event) => {
-  emit('update-query', event.target.value)
+const updateQuery = (value) => {
+  emit('update-query', value)
 }
 </script>
 
 <template>
   <div class="search-inner">
     <h3>🔍 도시 검색</h3>
-    <input
-      type="text"
-      :value="currentQuery"
-      @input="updateQuery"
+    <el-input
+      :model-value="currentQuery"
+      clearable
       placeholder="검색할 도시 이름 입력"
+      @update:model-value="updateQuery"
     />
     <p>
       검색 중인 도시: <strong>{{ currentQuery }}</strong>
     </p>
   </div>
 </template>
-
-<style scoped>
-.search-inner input {
-  width: 100%;
-  padding: 8px;
-  font-size: 14px;
-  color: #2c3e50;
-  background: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-}
-</style>

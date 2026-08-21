@@ -99,7 +99,7 @@ const displayTemp = computed(() => {
 </script>
 
 <template>
-  <section class="commute-guide">
+  <el-card class="commute-guide" shadow="never">
     <template v-if="city && recommendation">
       <div class="guide-heading">
         <div>
@@ -109,24 +109,28 @@ const displayTemp = computed(() => {
             {{ city.wind }}m/s
           </p>
         </div>
-        <span class="transport-badge">{{ recommendation.icon }} {{ recommendation.transport }}</span>
+        <el-tag type="primary" size="large" effect="dark">
+          {{ recommendation.icon }} {{ recommendation.transport }}
+        </el-tag>
       </div>
       <p><strong>추천 이유:</strong> {{ recommendation.reason }}</p>
       <p><strong>준비 사항:</strong> {{ recommendation.preparation }}</p>
       <small>날씨만을 기준으로 한 참고용 안내이며 실제 교통 상황은 반영하지 않습니다.</small>
     </template>
 
-    <p v-else class="empty-guide">판교·울산·광주 중 내 지역을 설정하면 이동 가이드를 보여드립니다.</p>
-  </section>
+    <el-alert
+      v-else
+      title="판교·울산·광주 중 내 지역을 설정하면 이동 가이드를 보여드립니다."
+      type="info"
+      :closable="false"
+      show-icon
+    />
+  </el-card>
 </template>
 
 <style scoped>
 .commute-guide {
-  padding: 16px;
   margin: 15px 0;
-  background: #f1f8ff;
-  border: 1px solid #cfe8ff;
-  border-radius: 8px;
 }
 
 .guide-heading {
@@ -141,22 +145,7 @@ const displayTemp = computed(() => {
   margin: 0 0 6px;
 }
 
-.transport-badge {
-  flex-shrink: 0;
-  padding: 8px 12px;
-  color: #fff;
-  font-weight: bold;
-  background: #3498db;
-  border-radius: 20px;
-}
-
-.commute-guide small,
-.empty-guide {
+.commute-guide small {
   color: #636e72;
-}
-
-.empty-guide {
-  margin: 0;
-  text-align: center;
 }
 </style>
