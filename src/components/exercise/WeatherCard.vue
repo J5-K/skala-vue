@@ -1,4 +1,9 @@
 <script setup>
+import { computed } from 'vue'
+import { useConfigStore } from '@/stores/configStore'
+
+const configStore = useConfigStore()
+
 const props = defineProps({
   cityItem: {
     type: Object,
@@ -30,12 +35,16 @@ const updateTemperature = (event) => {
     temperature: Number(event.target.value),
   })
 }
+
+const displayTemp = computed(() => {
+  return configStore.convertTemperature(props.cityItem.temp)
+})
 </script>
 
 <template>
   <div class="weather-card" @click="emit('select-card', cityItem)">
     <h4>{{ cityItem.name }} ({{ cityItem.status }})</h4>
-    <p>현재 기온: {{ cityItem.temp }}°C</p>
+    <p>현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
 
     <div class="temp-controller" @click.stop>
       <button @click="changeTemperature(-1)">-</button>
@@ -53,9 +62,7 @@ const updateTemperature = (event) => {
     </span>
     <span v-else class="badge cool">🆒 선선함 ({{ hotThreshold }}도 미만)</span>
 
-    <button class="btn-detail" @click.stop="emit('click-detail', cityItem)">
-      상세보기
-    </button>
+    <button class="btn-detail" @click.stop="emit('click-detail', cityItem)">상세보기</button>
   </div>
 </template>
 
