@@ -173,7 +173,7 @@ const selectCard = (city) => {
 }
 
 const setMyLocation = (city) => {
-  locationStore.selectLocation(city.id)
+  locationStore.selectLocation(city)
   selectedCityInfo.value = `${city.name}을(를) 내 지역으로 설정했습니다.`
 }
 

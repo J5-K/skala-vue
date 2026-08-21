@@ -18,6 +18,11 @@ const routes = [
     component: () => import('../views/WeatherSearchView.vue'),
   },
   {
+    path: '/break',
+    name: 'break-recommendation',
+    component: () => import('../views/BreakRecommendationView.vue'),
+  },
+  {
     path: '/weather/:cityId',
     name: 'weather-detail',
     component: () => import('../views/WeatherDetailView.vue'),

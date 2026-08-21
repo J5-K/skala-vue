@@ -85,6 +85,8 @@ import UnitToggler from './components/exercise/UnitToggler.vue'
     <nav class="navigation-bar">
       <RouterLink to="/" class="nav-item">SKALA 오늘의 날씨</RouterLink>
       <span class="divider">|</span>
+      <RouterLink to="/break" class="nav-item">잠깐 쉬어가기</RouterLink>
+      <span class="divider">|</span>
       <RouterLink to="/city-search" class="nav-item">다른 도시 검색</RouterLink>
       <span class="divider">|</span>
       <RouterLink to="/about" class="nav-item">서비스소개</RouterLink>
