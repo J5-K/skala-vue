@@ -14,10 +14,10 @@ npm run dev
 
 ## 진행 현황
 
-| 구분  | 추가 구현 주제                                 | 상태 |
-| ----- | ---------------------------------------------- | ---- |
-| Day 1 | 도시 검색, 온도 조절, 반응형 배지              | 완료 |
-| Day 2 | 실시간 검색, 날씨 요약, watcher, 컴포넌트 분리 | 완료 |
+| 구분  | 추가 구현 주제                                 | 상태    |
+| ----- | ---------------------------------------------- | ------- |
+| Day 1 | 도시 검색, 온도 조절, 반응형 배지              | 완료    |
+| Day 2 | 실시간 검색, 날씨 요약, watcher, 컴포넌트 분리 | 완료    |
 | Day 3 | Vue Router, Pinia, Axios 실시간 날씨           | 진행 중 |
 
 ---
@@ -60,7 +60,7 @@ npm run dev
 
 ### 1. `computed` 기반 실시간 검색
 
-- Day 1의 버튼 검색 방식보다 자연스럽게 사용할 수 있도록, 검색어가 바뀔 때 결과가 자동 계산되는 방식으로 개선했습니다.
+- Day 1의 버튼 검색 방식보다 자연스럽게 사용할 수 있도록, 기존의 `v-show` 검색 버튼 방식 대신 검색어가 바뀔 때 결과가 자동 계산되는 방식으로 개선했습니다.
 - `includes()`를 사용해 도시 이름의 일부만 입력해도 찾을 수 있게 했고, `filteredWeatherList`를 카드 목록에 직접 연결했습니다.
 - 계산 결과가 비어 있을 때는 사용자가 상황을 알 수 있도록 별도의 안내 문구를 표시했습니다.
 
@@ -234,35 +234,35 @@ WeatherParent가 상태 변경
 
 ### Day 3 핵심 문법
 
-| 추가 기능 | 적용 내용 |
-| --- | --- |
-| 화면 전환 | `RouterLink`, `RouterView` |
-| 코드 분할 | 동적 `import()` |
-| 동적 상세 경로 | `route.params`, `router.push()` |
-| 화면 간 날씨 전달 | `route.query` |
-| 검색 상태 유지 | `watch()`, `router.replace()` |
-| 잘못된 주소 처리 | Catch-all Route |
-| 전역 단위 상태 | `defineStore()`, Pinia |
-| 단위별 표시 온도 | `computed()`, `convertTemperature()` |
-| 여러 도시 동시 요청 | `axios`, `Promise.all()` |
-| API 실행 상태 처리 | `async/await`, `try/catch/finally` |
-| 상세 도시 변경 감지 | `watch()`, `route.params` |
-| 일출·일몰 시각 변환 | Unix timestamp, timezone |
-| 예보 날짜별 가공 | `Map`, `reduce()`, `map()` |
-| 도시 이름 좌표 변환 | Geocoding API |
-| 검색어 URL 유지 | `watch()`, `route.query` |
-| 검색 컴포넌트 통신 | props, emits |
-| 내 지역 전역 상태 | `defineStore()`, `ref()`, action |
-| 선택 도시 계산 | `computed()`, `find()` |
-| 카드 선택 통신 | props, emits |
-| 이동 방식 추천 | `computed()`, 조건문 |
-| 사용자 온도 기준 검증 | `ref()`, `computed()` |
-| Element Plus UI 적용 | `el-card`, `el-input-number`, `el-alert`, `el-tag` |
-| 휴식 시간과 추천 순서 | `ref()`, `v-model`, 배열 인덱스 |
-| 날씨별 활동 필터링 | `computed()`, `filter()` |
-| 추천 조건 초기화 | `watch()` |
-| 날씨별 음악 검색 | `computed()`, `encodeURIComponent()` |
-| 휴식 화면 상태 공유 | Pinia Store, props |
+| 추가 기능             | 적용 내용                                          |
+| --------------------- | -------------------------------------------------- |
+| 화면 전환             | `RouterLink`, `RouterView`                         |
+| 코드 분할             | 동적 `import()`                                    |
+| 동적 상세 경로        | `route.params`, `router.push()`                    |
+| 화면 간 날씨 전달     | `route.query`                                      |
+| 검색 상태 유지        | `watch()`, `router.replace()`                      |
+| 잘못된 주소 처리      | Catch-all Route                                    |
+| 전역 단위 상태        | `defineStore()`, Pinia                             |
+| 단위별 표시 온도      | `computed()`, `convertTemperature()`               |
+| 여러 도시 동시 요청   | `axios`, `Promise.all()`                           |
+| API 실행 상태 처리    | `async/await`, `try/catch/finally`                 |
+| 상세 도시 변경 감지   | `watch()`, `route.params`                          |
+| 일출·일몰 시각 변환   | Unix timestamp, timezone                           |
+| 예보 날짜별 가공      | `Map`, `reduce()`, `map()`                         |
+| 도시 이름 좌표 변환   | Geocoding API                                      |
+| 검색어 URL 유지       | `watch()`, `route.query`                           |
+| 검색 컴포넌트 통신    | props, emits                                       |
+| 내 지역 전역 상태     | `defineStore()`, `ref()`, action                   |
+| 선택 도시 계산        | `computed()`, `find()`                             |
+| 카드 선택 통신        | props, emits                                       |
+| 이동 방식 추천        | `computed()`, 조건문                               |
+| 사용자 온도 기준 검증 | `ref()`, `computed()`                              |
+| Element Plus UI 적용  | `el-card`, `el-input-number`, `el-alert`, `el-tag` |
+| 휴식 시간과 추천 순서 | `ref()`, `v-model`, 배열 인덱스                    |
+| 날씨별 활동 필터링    | `computed()`, `filter()`                           |
+| 추천 조건 초기화      | `watch()`                                          |
+| 날씨별 음악 검색      | `computed()`, `encodeURIComponent()`               |
+| 휴식 화면 상태 공유   | Pinia Store, props                                 |
 
 > Day 3는 진행 중이며, 이후 구현 내용은 같은 항목에 이어서 추가할 예정입니다.
 
@@ -287,6 +287,20 @@ WeatherParent가 상태 변경
 - 휴식 시간과 내 지역 날씨를 반영한 SKALA 휴식 활동 추천
 - 음악 활동의 날씨별 YouTube 검색 연결
 
+## 수업 실습 코드 정리
+
+수업 중 작성한 기본 문법, Composition API, 컴포넌트, Pinia, Axios 예제는 날씨 과제 코드와 섞이지 않도록 `src/components/practices`에 주제별로 정리했습니다.
+
+기존에는 실습을 확인할 때마다 `App.vue`의 import와 주석을 직접 바꿔야 했습니다. 이 과정을 줄이기 위해 실습 전용 `PracticeView.vue`를 만들고 `/practice` 경로에 연결했습니다.
+
+```text
+http://localhost:5173/practice
+```
+
+이 화면에서 Vue 기본 문법, 이벤트와 `v-model`, 반응형 상태, computed와 watcher, 컴포넌트 통신과 생명주기, Slot, Pinia, Axios 실습을 순서대로 확인할 수 있습니다.
+
+`PracticeView.vue`는 동적 import로 불러오고 제출용 내비게이션에는 링크를 표시하지 않았습니다. 덕분에 과제 화면은 그대로 유지하면서 필요할 때 주소로 실습 코드를 확인할 수 있습니다.
+
 ## 주요 파일
 
 ```text
@@ -301,6 +315,12 @@ src/components/exercise/
 ├── CommuteGuide.vue
 └── BreakRecommendation.vue
 
+src/components/practices/
+├── basic/
+├── composition/
+├── component/
+└── library/
+
 src/stores/
 ├── configStore.js
 └── locationStore.js
@@ -314,5 +334,6 @@ src/views/
 ├── BreakRecommendationView.vue
 ├── WeatherAboutView.vue
 ├── WeatherTipsView.vue
+├── PracticeView.vue
 └── NotFoundView.vue
 ```
