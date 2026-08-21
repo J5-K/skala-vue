@@ -173,6 +173,26 @@ WeatherParent가 상태 변경
 - 상세 API 요청 중에는 로딩 상태를, 실패 시에는 안내와 기본 데이터를 표시합니다.
 - 홈에서 직접 변경한 온도와 상태는 기존 URL query 값을 우선해 유지합니다.
 
+### 8. OpenWeather 5일 예보 API 연동
+
+- 현재 날씨 API와 5일 예보 API를 `Promise.all()`로 동시에 요청했습니다.
+- 3시간 단위 예보를 날짜별로 그룹화해 5일 단위 데이터로 가공했습니다.
+- 날짜별 최저·최고 기온과 최대 강수 확률을 계산했습니다.
+- 정오와 가장 가까운 시간의 날씨 상태와 아이콘을 대표 예보로 표시했습니다.
+- 예보 화면을 `WeatherForecast.vue`로 분리하고 props로 데이터를 전달했습니다.
+- Pinia의 단위 설정을 공유해 예보 온도도 섭씨·화씨로 변환됩니다.
+
+### 9. 별도 도시 검색 화면 추가
+
+- 기존 고정 도시 화면을 `SKALA 오늘의 날씨`로 유지했습니다.
+- `/city-search` 경로에 국내외 도시를 검색하는 별도 View를 추가했습니다.
+- OpenWeather Geocoding API로 도시 이름을 좌표로 변환합니다.
+- 동일한 이름의 도시 후보를 최대 5개까지 표시하고 사용자가 지역을 선택하도록 했습니다.
+- 선택한 도시 좌표로 Current Weather API를 호출해 실제 날씨를 표시합니다.
+- 검색 폼과 결과 화면을 props와 emits 기반 컴포넌트로 분리했습니다.
+- 검색어를 URL query에 저장해 새로고침 후에도 검색 상태를 복원합니다.
+- 검색 결과에도 Pinia의 섭씨·화씨 설정을 공유했습니다.
+
 ### Day 3 핵심 문법
 
 | 추가 기능 | 적용 내용 |
@@ -189,6 +209,10 @@ WeatherParent가 상태 변경
 | API 실행 상태 처리 | `async/await`, `try/catch/finally` |
 | 상세 도시 변경 감지 | `watch()`, `route.params` |
 | 일출·일몰 시각 변환 | Unix timestamp, timezone |
+| 예보 날짜별 가공 | `Map`, `reduce()`, `map()` |
+| 도시 이름 좌표 변환 | Geocoding API |
+| 검색어 URL 유지 | `watch()`, `route.query` |
+| 검색 컴포넌트 통신 | props, emits |
 
 > Day 3는 진행 중이며, 이후 구현 내용은 같은 항목에 이어서 추가할 예정입니다.
 
@@ -207,6 +231,8 @@ WeatherParent가 상태 변경
 - 홈·상세 화면의 섭씨/화씨 단위 동기화
 - 판교·울산·광주의 실시간 날씨 및 API 로딩·오류 상태 표시
 - 카드의 체감온도·습도·풍속과 상세 화면의 일출·일몰 표시
+- 도시별 5일 예보와 날짜별 최저·최고 기온·강수 확률 표시
+- 국내외 도시 검색, 지역 후보 선택 및 현재 날씨 확인
 
 ## 주요 파일
 
@@ -215,7 +241,10 @@ src/components/exercise/
 ├── BaseDashboardCard.vue
 ├── SearchBar.vue
 ├── WeatherCard.vue
-└── UnitToggler.vue
+├── UnitToggler.vue
+├── WeatherForecast.vue
+├── CitySearchForm.vue
+└── CitySearchResult.vue
 
 src/stores/
 └── configStore.js
@@ -225,6 +254,7 @@ src/stores/
 src/views/
 ├── WeatherHomeView.vue
 ├── WeatherDetailView.vue
+├── WeatherSearchView.vue
 ├── WeatherAboutView.vue
 ├── WeatherTipsView.vue
 └── NotFoundView.vue
