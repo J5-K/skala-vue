@@ -193,6 +193,17 @@ WeatherParent가 상태 변경
 - 검색어를 URL query에 저장해 새로고침 후에도 검색 상태를 복원합니다.
 - 검색 결과에도 Pinia의 섭씨·화씨 설정을 공유했습니다.
 
+### 10. 내 지역 선택과 날씨 기반 이동 가이드
+
+- 판교·울산·광주 중 하나를 내 지역으로 설정하는 버튼을 날씨 카드에 추가했습니다.
+- 선택한 도시 ID는 `locationStore`의 Pinia state에서 전역으로 관리합니다.
+- `WeatherCard`는 선택 여부를 props로 받고, `set-my-location` 이벤트로 부모에게 변경을 요청합니다.
+- 부모 View에서는 Store 상태와 도시 목록을 조합한 `computed`로 선택 도시 객체를 찾습니다.
+- `CommuteGuide.vue`는 선택 도시를 props로 받아 날씨 상태·기온·풍속·강수량을 기준으로 이동 방식을 계산합니다.
+- 비·눈·천둥·강풍·폭염·한파에는 대중교통이나 자차를, 쾌적한 날씨에는 도보나 자전거를 안내합니다.
+- 이동 방식과 함께 추천 이유와 준비물을 표시하며, 실제 교통량을 반영하지 않은 날씨 기반 참고 정보임을 명시했습니다.
+- 기존 Pinia 단위 설정을 공유해 선택 지역 온도도 섭씨·화씨로 함께 변환됩니다.
+
 ### Day 3 핵심 문법
 
 | 추가 기능 | 적용 내용 |
@@ -213,6 +224,10 @@ WeatherParent가 상태 변경
 | 도시 이름 좌표 변환 | Geocoding API |
 | 검색어 URL 유지 | `watch()`, `route.query` |
 | 검색 컴포넌트 통신 | props, emits |
+| 내 지역 전역 상태 | `defineStore()`, `ref()`, action |
+| 선택 도시 계산 | `computed()`, `find()` |
+| 카드 선택 통신 | props, emits |
+| 이동 방식 추천 | `computed()`, 조건문 |
 
 > Day 3는 진행 중이며, 이후 구현 내용은 같은 항목에 이어서 추가할 예정입니다.
 
@@ -233,6 +248,7 @@ WeatherParent가 상태 변경
 - 카드의 체감온도·습도·풍속과 상세 화면의 일출·일몰 표시
 - 도시별 5일 예보와 날짜별 최저·최고 기온·강수 확률 표시
 - 국내외 도시 검색, 지역 후보 선택 및 현재 날씨 확인
+- 판교·울산·광주 내 지역 설정 및 날씨 기반 이동 방식 안내
 
 ## 주요 파일
 
@@ -244,10 +260,12 @@ src/components/exercise/
 ├── UnitToggler.vue
 ├── WeatherForecast.vue
 ├── CitySearchForm.vue
-└── CitySearchResult.vue
+├── CitySearchResult.vue
+└── CommuteGuide.vue
 
 src/stores/
-└── configStore.js
+├── configStore.js
+└── locationStore.js
 
 .env.example
 
