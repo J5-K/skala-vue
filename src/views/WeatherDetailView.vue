@@ -4,12 +4,15 @@ import { useRoute, useRouter } from 'vue-router'
 import { useConfigStore } from '@/stores/configStore'
 import axios from 'axios'
 
+import WeatherForecast from '@/components/exercise/WeatherForecast.vue'
+
 const route = useRoute()
 const router = useRouter()
 
 const configStore = useConfigStore()
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather'
+const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast'
 
 const cityCoordinates = {
   city_01: { lat: 37.3947, lon: 127.1112 },
@@ -18,6 +21,7 @@ const cityCoordinates = {
 }
 
 const apiDetails = ref(null)
+const forecastList = ref([])
 const isLoading = ref(false)
 const errorMessage = ref('')
 
@@ -73,9 +77,53 @@ const formatLocalTime = (timestamp, timezone) => {
   })
 }
 
+const createDailyForecast = (forecastData) => {
+  const timezone = forecastData.city.timezone
+  const dailyGroups = new Map()
+
+  for (const item of forecastData.list) {
+    const localDate = new Date((item.dt + timezone) * 1000)
+    const dateKey = localDate.toISOString().slice(0, 10)
+    const hour = localDate.getUTCHours()
+
+    if (!dailyGroups.has(dateKey)) {
+      dailyGroups.set(dateKey, [])
+    }
+
+    dailyGroups.get(dateKey).push({ item, hour })
+  }
+
+  return Array.from(dailyGroups.entries())
+    .slice(0, 5)
+    .map(([date, entries]) => {
+      const representative = entries.reduce((closest, current) => {
+        return Math.abs(current.hour - 12) < Math.abs(closest.hour - 12) ? current : closest
+      })
+      const minTemp = Math.min(...entries.map(({ item }) => item.main.temp_min))
+      const maxTemp = Math.max(...entries.map(({ item }) => item.main.temp_max))
+      const maxPop = Math.max(...entries.map(({ item }) => item.pop ?? 0))
+
+      return {
+        date,
+        dateLabel: new Date(`${date}T00:00:00Z`).toLocaleDateString('ko-KR', {
+          timeZone: 'UTC',
+          month: 'numeric',
+          day: 'numeric',
+          weekday: 'short',
+        }),
+        minTemp: Math.round(minTemp),
+        maxTemp: Math.round(maxTemp),
+        status: representative.item.weather[0].description,
+        icon: representative.item.weather[0].icon,
+        pop: Math.round(maxPop * 100),
+      }
+    })
+}
+
 const fetchDetailWeather = async (cityId) => {
   const coordinates = cityCoordinates[cityId]
   apiDetails.value = null
+  forecastList.value = []
   errorMessage.value = ''
 
   if (!coordinates) {
@@ -85,17 +133,20 @@ const fetchDetailWeather = async (cityId) => {
   isLoading.value = true
 
   try {
-    const response = await axios.get(BASE_URL, {
-      params: {
-        lat: coordinates.lat,
-        lon: coordinates.lon,
-        appid: API_KEY,
-        units: 'metric',
-        lang: 'kr',
-      },
-    })
+    const requestParams = {
+      lat: coordinates.lat,
+      lon: coordinates.lon,
+      appid: API_KEY,
+      units: 'metric',
+      lang: 'kr',
+    }
 
-    const data = response.data
+    const [currentResponse, forecastResponse] = await Promise.all([
+      axios.get(BASE_URL, { params: requestParams }),
+      axios.get(FORECAST_URL, { params: requestParams }),
+    ])
+
+    const data = currentResponse.data
     apiDetails.value = {
       temp: Math.round(data.main.temp),
       feelsLike: Math.round(data.main.feels_like),
@@ -105,6 +156,7 @@ const fetchDetailWeather = async (cityId) => {
       sunrise: formatLocalTime(data.sys.sunrise, data.timezone),
       sunset: formatLocalTime(data.sys.sunset, data.timezone),
     }
+    forecastList.value = createDailyForecast(forecastResponse.data)
   } catch (error) {
     console.error('상세 날씨 API 요청 실패:', error)
     errorMessage.value = '실시간 상세 정보를 불러오지 못해 기본 정보를 표시합니다.'
@@ -164,6 +216,8 @@ const goHome = () => {
     <div v-else>
       <p>해당 지역의 상세 데이터 장부가 존재하지 않습니다.</p>
     </div>
+
+    <WeatherForecast v-if="forecastList.length > 0" :forecast-list="forecastList" />
 
     <button class="back-btn" @click="goHome">← 메인 대시보드로 돌아가기</button>
   </div>
