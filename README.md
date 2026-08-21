@@ -145,6 +145,13 @@ WeatherParent가 상태 변경
 - 존재하지 않는 주소는 Catch-all Route로 `NotFoundView.vue`에 연결했습니다.
 - 소개·생활 정보·404 화면에 이름 기반 홈 이동 기능을 적용했습니다.
 
+### 5. Pinia를 활용한 날씨 단위 설정
+
+- 섭씨·화씨 단위 상태를 `configStore`에서 전역으로 관리합니다.
+- 내비게이션의 단위변경 버튼으로 홈과 상세 화면의 단위를 함께 전환합니다.
+- 섭씨 원본 데이터는 유지하고 `convertTemperature()`로 표시 온도만 변환합니다.
+- 카드에서 온도를 변경해도 선택한 단위에 맞춰 표시 온도가 실시간 갱신됩니다.
+
 ### Day 3 핵심 문법
 
 | 추가 기능 | 적용 내용 |
@@ -155,6 +162,8 @@ WeatherParent가 상태 변경
 | 화면 간 날씨 전달 | `route.query` |
 | 검색 상태 유지 | `watch()`, `router.replace()` |
 | 잘못된 주소 처리 | Catch-all Route |
+| 전역 단위 상태 | `defineStore()`, Pinia |
+| 단위별 표시 온도 | `computed()`, `convertTemperature()` |
 
 > Day 3는 진행 중이며, 이후 구현 내용은 같은 항목에 이어서 추가할 예정입니다.
 
@@ -170,6 +179,7 @@ WeatherParent가 상태 변경
 - 새로고침 후 검색어 복원
 - 홈에서 변경한 기온과 날씨 상태의 상세 화면 연동
 - 날씨 생활 정보 및 404 화면
+- 홈·상세 화면의 섭씨/화씨 단위 동기화
 
 ## 주요 파일
 
@@ -177,7 +187,11 @@ WeatherParent가 상태 변경
 src/components/exercise/
 ├── BaseDashboardCard.vue
 ├── SearchBar.vue
-└── WeatherCard.vue
+├── WeatherCard.vue
+└── UnitToggler.vue
+
+src/stores/
+└── configStore.js
 
 src/views/
 ├── WeatherHomeView.vue
