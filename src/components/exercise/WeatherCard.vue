@@ -11,7 +11,11 @@ const props = defineProps({
   },
   hotThreshold: {
     type: Number,
-    required: true,
+    default: null,
+  },
+  coldThreshold: {
+    type: Number,
+    default: null,
   },
   isMyLocation: {
     type: Boolean,
@@ -34,10 +38,10 @@ const changeTemperature = (amount) => {
   })
 }
 
-const updateTemperature = (event) => {
+const updateTemperature = (temperature) => {
   emit('update-temperature', {
     cityId: props.cityItem.id,
-    temperature: Number(event.target.value),
+    temperature,
   })
 }
 
@@ -55,7 +59,7 @@ const displayFeelsLike = computed(() => {
 </script>
 
 <template>
-  <div class="weather-card" @click="emit('select-card', cityItem)">
+  <el-card class="weather-card" shadow="hover" @click="emit('select-card', cityItem)">
     <h4>{{ cityItem.name }} ({{ cityItem.status }})</h4>
     <p>현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
     <div v-if="displayFeelsLike !== null" class="weather-details">
@@ -65,43 +69,54 @@ const displayFeelsLike = computed(() => {
     </div>
 
     <div class="temp-controller" @click.stop>
-      <button @click="changeTemperature(-1)">-</button>
-      <input
-        type="number"
-        :value="cityItem.temp"
+      <el-button circle aria-label="기온 1도 감소" @click="changeTemperature(-1)">−</el-button>
+      <el-input-number
+        :model-value="cityItem.temp"
+        :controls="false"
         aria-label="현재 기온"
-        @input="updateTemperature"
+        @update:model-value="updateTemperature"
       />
-      <button @click="changeTemperature(1)">+</button>
+      <el-button circle aria-label="기온 1도 증가" @click="changeTemperature(1)">+</el-button>
     </div>
 
-    <span v-if="cityItem.temp >= hotThreshold" class="badge hot">
+    <el-tag
+      v-if="hotThreshold === null || coldThreshold === null"
+      type="info"
+      effect="dark"
+    >
+      🌡️ 기준을 입력해 주세요
+    </el-tag>
+    <el-tag v-else-if="coldThreshold >= hotThreshold" type="warning" effect="dark">
+      ⚠️ 온도 기준을 확인해 주세요
+    </el-tag>
+    <el-tag v-else-if="cityItem.temp >= hotThreshold" type="danger" effect="dark">
       🥵 더워요 ({{ hotThreshold }}도 이상)
-    </span>
-    <span v-else class="badge cool">🆒 선선함 ({{ hotThreshold }}도 미만)</span>
+    </el-tag>
+    <el-tag v-else-if="cityItem.temp <= coldThreshold" type="primary" effect="dark">
+      🥶 추워요 ({{ coldThreshold }}도 이하)
+    </el-tag>
+    <el-tag v-else type="success" effect="dark">🙂 적당해요</el-tag>
 
-    <button
+    <el-button
       class="location-btn"
-      :class="{ selected: isMyLocation }"
-      type="button"
+      :type="isMyLocation ? 'success' : 'default'"
+      size="small"
       @click.stop="emit('set-my-location', cityItem)"
     >
       {{ isMyLocation ? '📍 내 지역' : '내 지역 설정' }}
-    </button>
+    </el-button>
 
-    <button class="btn-detail" @click.stop="emit('click-detail', cityItem)">상세보기</button>
-  </div>
+    <el-button class="btn-detail" type="primary" @click.stop="emit('click-detail', cityItem)">
+      상세보기
+    </el-button>
+  </el-card>
 </template>
 
 <style scoped>
 .weather-card {
   position: relative;
-  padding: 12px;
   margin-bottom: 10px;
   cursor: pointer;
-  background: #fff;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
 }
 
 .temp-controller {
@@ -120,30 +135,8 @@ const displayFeelsLike = computed(() => {
   font-size: 13px;
 }
 
-.temp-controller button {
-  padding: 6px 12px;
-  cursor: pointer;
-}
-
-.temp-controller input {
+.temp-controller :deep(.el-input-number) {
   width: 60px;
-  text-align: center;
-}
-
-.badge {
-  display: inline-block;
-  padding: 4px 8px;
-  color: #fff;
-  font-size: 12px;
-  border-radius: 4px;
-}
-
-.hot {
-  background-color: #ff7675;
-}
-
-.cool {
-  background-color: #74b9ff;
 }
 
 .btn-detail {
@@ -155,18 +148,6 @@ const displayFeelsLike = computed(() => {
 }
 
 .location-btn {
-  padding: 5px 9px;
   margin-left: 8px;
-  color: #2c3e50;
-  cursor: pointer;
-  background: #fff;
-  border: 1px solid #b2bec3;
-  border-radius: 4px;
-}
-
-.location-btn.selected {
-  color: #fff;
-  background: #00b894;
-  border-color: #00b894;
 }
 </style>

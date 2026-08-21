@@ -30,8 +30,28 @@ const errorMessage = ref('')
 const initialSearch = typeof route.query.search === 'string' ? route.query.search : ''
 const searchQuery = ref(initialSearch)
 const selectedCityInfo = ref('카드를 클릭하거나 검색하세요')
-const hotThreshold = ref(25)
-const thresholdMessage = ref('현재 더움 기준 온도는 25°C입니다.')
+const hotThreshold = ref(null)
+const coldThreshold = ref(null)
+
+const thresholdMessage = computed(() => {
+  if (hotThreshold.value === null || coldThreshold.value === null) {
+    return '더위와 추위 기준 온도를 입력해 주세요.'
+  }
+
+  if (coldThreshold.value >= hotThreshold.value) {
+    return '추위 기준은 더위 기준보다 낮게 입력해 주세요.'
+  }
+
+  return `추위 ${coldThreshold.value}°C 이하 · 더위 ${hotThreshold.value}°C 이상`
+})
+
+const isThresholdValid = computed(() => {
+  return (
+    coldThreshold.value !== null &&
+    hotThreshold.value !== null &&
+    coldThreshold.value < hotThreshold.value
+  )
+})
 
 const filteredWeatherList = computed(() => {
   const query = searchQuery.value.trim()
@@ -44,7 +64,29 @@ const filteredWeatherList = computed(() => {
 })
 
 const hotCityCount = computed(() => {
+  if (!isThresholdValid.value) {
+    return 0
+  }
+
   return weatherList.value.filter((city) => city.temp >= hotThreshold.value).length
+})
+
+const coldCityCount = computed(() => {
+  if (!isThresholdValid.value) {
+    return 0
+  }
+
+  return weatherList.value.filter((city) => city.temp <= coldThreshold.value).length
+})
+
+const mildCityCount = computed(() => {
+  if (!isThresholdValid.value) {
+    return 0
+  }
+
+  return weatherList.value.filter(
+    (city) => city.temp > coldThreshold.value && city.temp < hotThreshold.value,
+  ).length
 })
 
 const averageTemperature = computed(() => {
@@ -101,10 +143,6 @@ const fetchRealTimeWeather = async () => {
 
 onMounted(() => {
   fetchRealTimeWeather()
-})
-
-watch(hotThreshold, (newTemperature, oldTemperature) => {
-  thresholdMessage.value = `더움 기준이 ${oldTemperature}°C에서 ${newTemperature}°C로 변경되었습니다.`
 })
 
 watch(selectedCityInfo, (newInfo, oldInfo) => {
@@ -181,23 +219,54 @@ const updateTemperature = ({ cityId, temperature }) => {
 
     <BaseDashboardCard>
       <div class="standard-box">
-        <h3>🌡️ 나만의 더위 기준</h3>
-        <label>
-          기준 온도:
-          <input type="number" v-model.number="hotThreshold" />
-          °C
-        </label>
-        <p>{{ thresholdMessage }}</p>
+        <h3>🌡️ 나만의 온도 기준</h3>
+        <div class="threshold-inputs">
+          <label>
+            🥶 추위 기준:
+            <el-input-number
+              v-model="coldThreshold"
+              :controls="false"
+              placeholder="예: 10"
+            />
+            °C 이하
+          </label>
+
+          <label>
+            🥵 더위 기준:
+            <el-input-number
+              v-model="hotThreshold"
+              :controls="false"
+              placeholder="예: 25"
+            />
+            °C 이상
+          </label>
+        </div>
+
+        <el-alert
+          :title="thresholdMessage"
+          :type="isThresholdValid ? 'success' : 'warning'"
+          :closable="false"
+          show-icon
+        />
         <p>전체 도시 평균 기온: {{ averageTemperature }}°C</p>
-        <p>더운 도시: {{ hotCityCount }}곳</p>
+        <p v-if="isThresholdValid">
+          추운 도시: {{ coldCityCount }}곳 · 적당한 도시: {{ mildCityCount }}곳 · 더운 도시:
+          {{ hotCityCount }}곳
+        </p>
       </div>
     </BaseDashboardCard>
 
     <BaseDashboardCard>
       <h3>🌆 지역별 날씨 현황</h3>
 
-      <p v-if="isLoading" class="loading-message">실시간 날씨를 불러오는 중입니다...</p>
-      <p v-else-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      <el-skeleton v-if="isLoading" :rows="5" animated />
+      <el-alert
+        v-else-if="errorMessage"
+        :title="errorMessage"
+        type="error"
+        :closable="false"
+        show-icon
+      />
 
       <template v-else>
         <WeatherCard
@@ -205,6 +274,7 @@ const updateTemperature = ({ cityId, temperature }) => {
           :key="item.id"
           :city-item="item"
           :hot-threshold="hotThreshold"
+          :cold-threshold="coldThreshold"
           :is-my-location="locationStore.selectedCityId === item.id"
           @select-card="selectCard"
           @click-detail="clickDetail"
@@ -213,9 +283,10 @@ const updateTemperature = ({ cityId, temperature }) => {
           @set-my-location="setMyLocation"
         />
 
-        <p v-if="filteredWeatherList.length === 0" class="empty-message">
-          😭 검색 결과와 일치하는 도시가 없습니다.
-        </p>
+        <el-empty
+          v-if="filteredWeatherList.length === 0"
+          description="검색 결과와 일치하는 도시가 없습니다."
+        />
       </template>
     </BaseDashboardCard>
 
@@ -233,29 +304,21 @@ const updateTemperature = ({ cityId, temperature }) => {
   margin: 0 auto;
 }
 
-.standard-box input {
-  width: 70px;
+.standard-box :deep(.el-input-number) {
+  width: 110px;
 }
 
-.empty-message {
-  padding: 10px 0;
-  color: #e74c3c;
-  text-align: center;
+.threshold-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-bottom: 12px;
 }
 
-.loading-message,
-.error-message {
-  padding: 20px 0;
-  font-weight: bold;
-  text-align: center;
-}
-
-.loading-message {
-  color: #3498db;
-}
-
-.error-message {
-  color: #e74c3c;
+.threshold-inputs label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .status-bar {
