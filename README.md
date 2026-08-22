@@ -30,7 +30,7 @@ npm run build
 - `npm run build`로 production build를 실행해 `dist` 정적 파일이 정상 생성되는지 확인했습니다.
 - 로컬 환경과 동일하게 동작하는지 확인한 뒤 GitHub 저장소를 Vercel에 연결했습니다.
 - Vercel의 Build Command는 `npm run build`, Output Directory는 `dist`로 설정했습니다.
-- OpenWeather와 Pexels API 키는 Vercel Production Environment Variables에 따로 등록했습니다.
+- 배포 시 OpenWeather와 Pexels API 키는 Vercel Production Environment Variables에 따로 등록해야 합니다.
 - 배포 후 실시간 날씨, 상세 화면, 도시 검색, 휴식 도우미와 라우트 이동을 다시 확인했습니다.
 
 배포 결과는 [SKALA 날씨 과제 실행하기](https://skala-vue-gules-two.vercel.app/)에서 확인할 수 있습니다. 로컬의 `.env.local`은 Git에서 제외하고, 실제 배포 환경에서는 Vercel 환경변수를 사용했습니다.
