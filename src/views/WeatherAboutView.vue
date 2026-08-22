@@ -28,7 +28,7 @@ const features = [
   {
     icon: '✈️',
     title: '여행지 날씨',
-    description: '국내외 여행지를 검색하고 현재 날씨와 여행 팁을 확인합니다.',
+    description: '국내외 여행지를 검색하고, 사진과 함께 랜덤 추천 여행지를 확인합니다.',
     route: 'weather-search',
     button: '여행지 찾기',
   },
@@ -37,8 +37,9 @@ const features = [
 const technologies = [
   { label: 'Vue Composition API', content: '반응형 상태와 추천 조건 계산' },
   { label: 'Vue Router', content: '홈·상세·휴식·여행지 화면 분리' },
-  { label: 'Pinia', content: '온도 단위와 선택 지역 상태 공유' },
-  { label: 'Axios', content: 'OpenWeather 실시간 데이터 요청' },
+  { label: 'Pinia + localStorage', content: '선택 지역과 사용자 온도 기준 저장' },
+  { label: 'Composable', content: '선택 지역의 최신 날씨 요청 로직 재사용' },
+  { label: 'Axios', content: 'OpenWeather 날씨와 Pexels 도시 사진 요청' },
   { label: 'Element Plus', content: '카드·상태 안내·접기 UI 구성' },
   { label: 'Vercel', content: '환경변수를 적용한 정적 웹 배포' },
 ]
@@ -87,7 +88,8 @@ const moveTo = (routeName) => {
       <el-tag type="primary" effect="dark" round>SKALA 교육생을 위한 날씨 서비스</el-tag>
       <h2>⛅ RESTful SKALA</h2>
       <p>
-        캠퍼스 별 실시간 날씨를 확인하고 추천 이동 방법부터 휴식 활동까지 제안하는 SKALA 쉼터 도우미입니다.
+        캠퍼스 별 실시간 날씨를 확인하고 추천 이동 방법부터 휴식 활동까지 제안하는 SKALA 쉼터
+        도우미입니다.
       </p>
       <p class="name-story">
         REST API의 <strong>REST</strong>와 잠깐 쉬어가는 <strong>rest</strong>의 의미를 함께
@@ -146,11 +148,7 @@ const moveTo = (routeName) => {
         </div>
       </div>
       <el-descriptions :column="2" border>
-        <el-descriptions-item
-          v-for="tech in technologies"
-          :key="tech.label"
-          :label="tech.label"
-        >
+        <el-descriptions-item v-for="tech in technologies" :key="tech.label" :label="tech.label">
           {{ tech.content }}
         </el-descriptions-item>
       </el-descriptions>
@@ -161,15 +159,14 @@ const moveTo = (routeName) => {
         <span class="section-icon">🔎</span>
         <div>
           <h3>문제를 해결하며 배운 점</h3>
-          <p>진행 중 막혔던 부분과 직접 찾아본 해결 방법을 모았습니다.</p>
+          <p>
+            구현하면서 직접 해결했던 대표적인 문제를 정리했습니다. 전체 과정은 아래 GitHub README에
+            기록해 두었습니다.
+          </p>
         </div>
       </div>
       <el-collapse accordion>
-        <el-collapse-item
-          v-for="(item, index) in troubleshooting"
-          :key="item.title"
-          :name="index"
-        >
+        <el-collapse-item v-for="(item, index) in troubleshooting" :key="item.title" :name="index">
           <template #title>
             <strong>{{ index + 1 }}. {{ item.title }}</strong>
           </template>
