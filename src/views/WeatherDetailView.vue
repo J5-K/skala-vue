@@ -235,6 +235,7 @@ const goHome = () => {
 
 <style scoped>
 .detail-container {
+  width: min(1000px, 100%);
   margin: 0 auto;
   background: white;
   padding: 20px;

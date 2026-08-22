@@ -140,7 +140,7 @@ watch(
 
 <style scoped>
 .city-search-view {
-  width: min(680px, 100%);
+  width: min(960px, 100%);
   margin: 0 auto;
 }
 

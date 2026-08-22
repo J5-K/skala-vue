@@ -213,82 +213,86 @@ const updateTemperature = ({ cityId, temperature }) => {
 
 <template>
   <div class="dashboard-wrapper">
-    <BaseDashboardCard>
-      <SearchBar :current-query="searchQuery" @update-query="updateQuery" />
-    </BaseDashboardCard>
+    <div class="dashboard-grid">
+      <aside class="dashboard-sidebar">
+        <BaseDashboardCard>
+          <SearchBar :current-query="searchQuery" @update-query="updateQuery" />
+        </BaseDashboardCard>
 
-    <BaseDashboardCard>
-      <div class="standard-box">
-        <h3>🌡️ 나만의 온도 기준</h3>
-        <div class="threshold-inputs">
-          <label>
-            🥶 추위 기준:
-            <el-input-number
-              v-model="coldThreshold"
-              :controls="false"
-              placeholder="예: 10"
+        <BaseDashboardCard>
+          <div class="standard-box">
+            <h3>🌡️ 나만의 온도 기준</h3>
+            <div class="threshold-inputs">
+              <label>
+                🥶 추위 기준:
+                <el-input-number
+                  v-model="coldThreshold"
+                  :controls="false"
+                  placeholder="예: 10"
+                />
+                °C 이하
+              </label>
+
+              <label>
+                🥵 더위 기준:
+                <el-input-number
+                  v-model="hotThreshold"
+                  :controls="false"
+                  placeholder="예: 25"
+                />
+                °C 이상
+              </label>
+            </div>
+
+            <el-alert
+              :title="thresholdMessage"
+              :type="isThresholdValid ? 'success' : 'warning'"
+              :closable="false"
+              show-icon
             />
-            °C 이하
-          </label>
+            <p>전체 도시 평균 기온: {{ averageTemperature }}°C</p>
+            <p v-if="isThresholdValid">
+              추운 도시: {{ coldCityCount }}곳 · 적당한 도시: {{ mildCityCount }}곳 · 더운
+              도시: {{ hotCityCount }}곳
+            </p>
+          </div>
+        </BaseDashboardCard>
+      </aside>
 
-          <label>
-            🥵 더위 기준:
-            <el-input-number
-              v-model="hotThreshold"
-              :controls="false"
-              placeholder="예: 25"
-            />
-            °C 이상
-          </label>
-        </div>
+      <BaseDashboardCard class="weather-panel">
+        <h3>🌆 지역별 날씨 현황</h3>
 
+        <el-skeleton v-if="isLoading" :rows="5" animated />
         <el-alert
-          :title="thresholdMessage"
-          :type="isThresholdValid ? 'success' : 'warning'"
+          v-else-if="errorMessage"
+          :title="errorMessage"
+          type="error"
           :closable="false"
           show-icon
         />
-        <p>전체 도시 평균 기온: {{ averageTemperature }}°C</p>
-        <p v-if="isThresholdValid">
-          추운 도시: {{ coldCityCount }}곳 · 적당한 도시: {{ mildCityCount }}곳 · 더운 도시:
-          {{ hotCityCount }}곳
-        </p>
-      </div>
-    </BaseDashboardCard>
 
-    <BaseDashboardCard>
-      <h3>🌆 지역별 날씨 현황</h3>
+        <template v-else>
+          <WeatherCard
+            v-for="item in filteredWeatherList"
+            :key="item.id"
+            :city-item="item"
+            :hot-threshold="hotThreshold"
+            :cold-threshold="coldThreshold"
+            :is-my-location="locationStore.selectedCityId === item.id"
+            @select-card="selectCard"
+            @click-detail="clickDetail"
+            @change-temperature="changeTemperature"
+            @update-temperature="updateTemperature"
+            @set-my-location="setMyLocation"
+          />
 
-      <el-skeleton v-if="isLoading" :rows="5" animated />
-      <el-alert
-        v-else-if="errorMessage"
-        :title="errorMessage"
-        type="error"
-        :closable="false"
-        show-icon
-      />
-
-      <template v-else>
-        <WeatherCard
-          v-for="item in filteredWeatherList"
-          :key="item.id"
-          :city-item="item"
-          :hot-threshold="hotThreshold"
-          :cold-threshold="coldThreshold"
-          :is-my-location="locationStore.selectedCityId === item.id"
-          @select-card="selectCard"
-          @click-detail="clickDetail"
-          @change-temperature="changeTemperature"
-          @update-temperature="updateTemperature"
-          @set-my-location="setMyLocation"
-        />
-
-        <el-empty
-          v-if="filteredWeatherList.length === 0"
-          description="검색 결과와 일치하는 도시가 없습니다."
-        />
-      </template>
-    </BaseDashboardCard>
+          <el-empty
+            v-if="filteredWeatherList.length === 0"
+            description="검색 결과와 일치하는 도시가 없습니다."
+          />
+        </template>
+      </BaseDashboardCard>
+    </div>
 
     <CommuteGuide :city="myCity" />
 
@@ -300,8 +304,21 @@ const updateTemperature = ({ cityId, temperature }) => {
 
 <style scoped>
 .dashboard-wrapper {
-  width: 600px;
+  width: 100%;
+  max-width: 1240px;
   margin: 0 auto;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(290px, 360px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.dashboard-sidebar {
+  display: grid;
+  gap: 20px;
 }
 
 .standard-box :deep(.el-input-number) {
@@ -309,9 +326,8 @@ const updateTemperature = ({ cityId, temperature }) => {
 }
 
 .threshold-inputs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
+  display: grid;
+  gap: 12px;
   margin-bottom: 12px;
 }
 
@@ -328,5 +344,18 @@ const updateTemperature = ({ cityId, temperature }) => {
   text-align: center;
   background: #e8f5e9;
   border-radius: 6px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .threshold-inputs label {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 </style>
