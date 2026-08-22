@@ -87,8 +87,7 @@ const moveTo = (routeName) => {
       <el-tag type="primary" effect="dark" round>SKALA 교육생을 위한 날씨 서비스</el-tag>
       <h2>⛅ RESTful SKALA</h2>
       <p>
-        실시간 날씨를 확인하는 데서 끝나지 않고, 오늘의 이동 방법과 공부 중 휴식 활동까지
-        제안하는 날씨 기반 생활 도우미입니다.
+        캠퍼스 별 실시간 날씨를 확인하고 추천 이동 방법부터 휴식 활동까지 제안하는 SKALA 쉼터 도우미입니다.
       </p>
       <p class="name-story">
         REST API의 <strong>REST</strong>와 잠깐 쉬어가는 <strong>rest</strong>의 의미를 함께
