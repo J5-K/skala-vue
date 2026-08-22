@@ -211,9 +211,9 @@ const moveTo = (routeName) => {
 .about-hero {
   padding: clamp(24px, 5vw, 48px);
   text-align: center;
-  background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+  background: linear-gradient(120deg, #a6cff8, #eef2f7);
   border: 1px solid #dbeafe;
-  border-radius: 18px;
+  border-radius: 10px;
 }
 
 .about-hero h2 {
