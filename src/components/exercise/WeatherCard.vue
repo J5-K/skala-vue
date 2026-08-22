@@ -36,6 +36,18 @@ const displayFeelsLike = computed(() => {
 
   return configStore.convertTemperature(props.cityItem.feelsLike)
 })
+
+const displayHotThreshold = computed(() => {
+  if (props.hotThreshold === null) return null
+
+  return configStore.convertTemperature(props.hotThreshold)
+})
+
+const displayColdThreshold = computed(() => {
+  if (props.coldThreshold === null) return null
+
+  return configStore.convertTemperature(props.coldThreshold)
+})
 </script>
 
 <template>
@@ -66,10 +78,10 @@ const displayFeelsLike = computed(() => {
           ⚠️ 온도 기준을 확인해 주세요
         </el-tag>
         <el-tag v-else-if="cityItem.temp >= hotThreshold" type="danger" effect="dark">
-          🥵 더워요 ({{ hotThreshold }}도 이상)
+          🥵 더워요 ({{ displayHotThreshold }}{{ configStore.unitSymbol }} 이상)
         </el-tag>
         <el-tag v-else-if="cityItem.temp <= coldThreshold" type="primary" effect="dark">
-          🥶 추워요 ({{ coldThreshold }}도 이하)
+          🥶 추워요 ({{ displayColdThreshold }}{{ configStore.unitSymbol }} 이하)
         </el-tag>
         <el-tag v-else type="success" effect="dark">🙂 적당해요</el-tag>
 

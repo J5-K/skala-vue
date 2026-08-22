@@ -1,8 +1,10 @@
 <script setup>
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import axios from 'axios'
 import { useLocationStore } from '@/stores/locationStore'
+import { useConfigStore } from '@/stores/configStore'
 import { cityTargets } from '@/data/cityTargets'
 
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
@@ -13,6 +15,8 @@ import WeatherCard from '../components/exercise/WeatherCard.vue'
 const router = useRouter()
 const route = useRoute()
 const locationStore = useLocationStore()
+const configStore = useConfigStore()
+const { coldThreshold, hotThreshold } = storeToRefs(configStore)
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather'
@@ -25,8 +29,6 @@ const errorMessage = ref('')
 const initialSearch = typeof route.query.search === 'string' ? route.query.search : ''
 const searchQuery = ref(initialSearch)
 const selectedCityInfo = ref('카드를 클릭하거나 검색하세요')
-const hotThreshold = ref(null)
-const coldThreshold = ref(null)
 
 const thresholdMessage = computed(() => {
   if (hotThreshold.value === null || coldThreshold.value === null) {
@@ -216,6 +218,8 @@ const clickDetail = (city) => {
               </label>
             </div>
 
+            <small class="threshold-notice">온도 기준은 섭씨(°C)로 입력해 주세요.</small>
+
             <el-alert
               :title="thresholdMessage"
               :type="isThresholdValid ? 'success' : 'warning'"
@@ -299,6 +303,12 @@ const clickDetail = (city) => {
   display: grid;
   gap: 12px;
   margin-bottom: 12px;
+}
+
+.threshold-notice {
+  display: block;
+  margin: -4px 0 12px;
+  color: #64748b;
 }
 
 .threshold-inputs label {
