@@ -186,7 +186,7 @@ watch([selectedDuration, () => props.city?.id, () => props.city?.weatherMain], (
   <el-card class="break-recommendation" shadow="never">
     <template #header>
       <div>
-        <h3>🎒 SKALA 잠깐 쉬어가기</h3>
+        <h3>🎒 SKALA</h3>
         <p v-if="city">
           {{ city.name }}에서 열심히 공부 중이군요. 현재 {{ city.status }}, {{ displayTemp
           }}{{ configStore.unitSymbol }}예요.

@@ -4,8 +4,10 @@ import UnitToggler from './components/exercise/UnitToggler.vue'
 
 <template>
   <div class="app-container">
-    <h1>⛅ 날씨 과제</h1>
-    <hr />
+    <header class="service-header">
+      <h1>⛅ RESTful SKALA</h1>
+      <p>API로 날씨를 받고, 일상에서 쉼을 더하다</p>
+    </header>
     <nav class="navigation-bar">
       <RouterLink to="/" class="nav-item">SKALA 오늘의 날씨</RouterLink>
       <span class="divider">|</span>

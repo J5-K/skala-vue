@@ -15,7 +15,7 @@ const goToWeather = () => {
   <div class="break-view">
     <div class="view-heading">
       <div>
-        <h2>🎒 SKALA 휴식 도우미</h2>
+        <h2>☺️ SKALA 휴식 도우미</h2>
         <p>공부 흐름은 지키면서, 지금 날씨에 맞게 잠깐 쉬어가세요.</p>
       </div>
       <el-button type="primary" plain @click="goToWeather">내 지역 설정하러 가기</el-button>
@@ -27,7 +27,7 @@ const goToWeather = () => {
 
 <style scoped>
 .break-view {
-  width: 600px;
+  width: min(900px, 100%);
   margin: 0 auto;
 }
 
