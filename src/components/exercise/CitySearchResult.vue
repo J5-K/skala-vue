@@ -36,6 +36,40 @@ const displayFeelsLike = computed(() => {
   return configStore.convertTemperature(props.selectedWeather.feelsLike)
 })
 
+const travelTip = computed(() => {
+  if (!props.selectedWeather) {
+    return ''
+  }
+
+  const { weatherMain, temp, wind } = props.selectedWeather
+
+  if (weatherMain === 'Rain' || weatherMain === 'Drizzle') {
+    return '비가 오고 있어요. 실내 명소와 분위기 좋은 카페를 함께 찾아보세요.'
+  }
+
+  if (weatherMain === 'Snow') {
+    return '눈 풍경을 즐기기 좋지만 이동 시간을 넉넉하게 잡아주세요.'
+  }
+
+  if (weatherMain === 'Thunderstorm' || wind >= 10) {
+    return '날씨가 거칠어요. 이동 일정을 여유롭게 잡고 실내 코스를 준비해 보세요.'
+  }
+
+  if (temp >= 30) {
+    return '한낮 야외 일정은 줄이고 시원한 실내 코스를 중심으로 계획해 보세요.'
+  }
+
+  if (temp <= 0) {
+    return '따뜻한 옷을 챙기고 실내 명소를 중심으로 여행해 보세요.'
+  }
+
+  if (weatherMain === 'Clear') {
+    return '산책과 야외 관광을 즐기기 좋은 날씨예요. 가볍게 떠나볼까요?'
+  }
+
+  return '현재 날씨를 참고해 실내와 야외 일정을 적절히 섞어보세요.'
+})
+
 const locationLabel = (location) => {
   return [location.name, location.state, location.country].filter(Boolean).join(', ')
 }
@@ -43,7 +77,7 @@ const locationLabel = (location) => {
 
 <template>
   <section v-if="locations.length > 0" class="location-section">
-    <h3>📍 검색된 지역</h3>
+    <h3>📍 찾은 여행지 후보</h3>
     <button
       v-for="location in locations"
       :key="`${location.lat}-${location.lon}`"
@@ -78,6 +112,13 @@ const locationLabel = (location) => {
     <p>날씨 상태: {{ selectedWeather.status }}</p>
     <p>습도: {{ selectedWeather.humidity }}%</p>
     <p>풍속: {{ selectedWeather.wind }}m/s</p>
+    <el-alert
+      class="travel-tip"
+      :title="travelTip"
+      type="success"
+      :closable="false"
+      show-icon
+    />
   </section>
 </template>
 
@@ -129,5 +170,9 @@ const locationLabel = (location) => {
 .weather-title img {
   width: 72px;
   height: 72px;
+}
+
+.travel-tip {
+  margin-top: 14px;
 }
 </style>

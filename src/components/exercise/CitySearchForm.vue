@@ -6,13 +6,17 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  searchMode: {
+    type: String,
+    default: 'domestic',
+  },
   isLoading: {
     type: Boolean,
     default: false,
   },
 })
 
-const emit = defineEmits(['search-city'])
+const emit = defineEmits(['search-city', 'update:search-mode'])
 const localQuery = ref(props.currentQuery)
 
 watch(
@@ -33,16 +37,31 @@ const submitSearch = () => {
 
 <template>
   <form class="city-search-form" @submit.prevent="submitSearch">
-    <label for="city-query">검색할 도시</label>
+    <div class="mode-selector">
+      <span>국내/해외 선택</span>
+      <el-radio-group
+        :model-value="searchMode"
+        @update:model-value="emit('update:search-mode', $event)"
+      >
+        <el-radio-button value="domestic">🇰🇷 국내</el-radio-button>
+        <el-radio-button value="overseas">🌍 해외</el-radio-button>
+      </el-radio-group>
+    </div>
+
+    <label for="city-query">어디로 떠나고 싶나요?</label>
     <div class="input-row">
       <input
         id="city-query"
         v-model.trim="localQuery"
         type="search"
-        placeholder="예: 제주, Tokyo, Paris"
+        :placeholder="
+          searchMode === 'domestic'
+            ? '국내 도시 입력 (예: 제주, 부산)'
+            : '해외 도시 입력 (예: Tokyo, Paris)'
+        "
       />
       <button type="submit" :disabled="isLoading || !localQuery.trim()">
-        {{ isLoading ? '검색 중...' : '검색' }}
+        {{ isLoading ? '찾는 중...' : '여행지 찾기' }}
       </button>
     </div>
   </form>
@@ -59,6 +78,18 @@ const submitSearch = () => {
 .city-search-form label {
   display: block;
   margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.mode-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.mode-selector span {
   font-weight: bold;
 }
 
@@ -85,5 +116,22 @@ const submitSearch = () => {
 .input-row button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+@media (max-width: 560px) {
+  .mode-selector,
+  .input-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mode-selector :deep(.el-radio-group) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mode-selector :deep(.el-radio-button__inner) {
+    width: 100%;
+  }
 }
 </style>

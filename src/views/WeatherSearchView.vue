@@ -14,6 +14,7 @@ const GEOCODING_URL = 'https://api.openweathermap.org/geo/1.0/direct'
 const WEATHER_URL = 'https://api.openweathermap.org/data/2.5/weather'
 
 const currentQuery = ref('')
+const searchMode = ref('domestic')
 const locations = ref([])
 const selectedWeather = ref(null)
 const isSearching = ref(false)
@@ -21,7 +22,10 @@ const isWeatherLoading = ref(false)
 const errorMessage = ref('')
 
 const searchLocations = async (query) => {
-  currentQuery.value = query
+  const normalizedQuery = query.trim().replace(/\s+/g, ' ')
+  const apiQuery = searchMode.value === 'domestic' ? `${normalizedQuery},KR` : normalizedQuery
+
+  currentQuery.value = normalizedQuery
   locations.value = []
   selectedWeather.value = null
   errorMessage.value = ''
@@ -30,13 +34,17 @@ const searchLocations = async (query) => {
   try {
     const response = await axios.get(GEOCODING_URL, {
       params: {
-        q: query,
+        q: apiQuery,
         limit: 5,
         appid: API_KEY,
       },
     })
 
-    locations.value = response.data
+    locations.value = response.data.filter((location) => {
+      return searchMode.value === 'domestic'
+        ? location.country === 'KR'
+        : location.country !== 'KR'
+    })
 
     if (locations.value.length === 0) {
       errorMessage.value = '검색 결과와 일치하는 도시가 없습니다.'
@@ -50,14 +58,30 @@ const searchLocations = async (query) => {
 }
 
 const handleSearch = (query) => {
-  if (route.query.q === query) {
+  if (route.query.q === query && route.query.mode === searchMode.value) {
     searchLocations(query)
     return
   }
 
   router.push({
     name: 'weather-search',
-    query: { q: query },
+    query: {
+      q: query,
+      mode: searchMode.value,
+    },
+  })
+}
+
+const changeSearchMode = (mode) => {
+  searchMode.value = mode
+  currentQuery.value = ''
+  locations.value = []
+  selectedWeather.value = null
+  errorMessage.value = ''
+
+  router.replace({
+    name: 'weather-search',
+    query: { mode },
   })
 }
 
@@ -84,6 +108,7 @@ const selectLocation = async (location) => {
       temp: Math.round(data.main.temp),
       feelsLike: Math.round(data.main.feels_like),
       status: data.weather[0].description,
+      weatherMain: data.weather[0].main,
       icon: data.weather[0].icon,
       humidity: data.main.humidity,
       wind: data.wind.speed,
@@ -97,8 +122,9 @@ const selectLocation = async (location) => {
 }
 
 watch(
-  () => route.query.q,
-  (query) => {
+  [() => route.query.q, () => route.query.mode],
+  ([query, mode]) => {
+    searchMode.value = mode === 'overseas' ? 'overseas' : 'domestic'
     const normalizedQuery = typeof query === 'string' ? query.trim() : ''
 
     if (normalizedQuery) {
@@ -117,13 +143,15 @@ watch(
 <template>
   <div class="city-search-view">
     <header>
-      <h2>🌍 다른 도시 날씨 검색</h2>
-      <p>국내외 도시를 검색하고 현재 날씨를 확인해 보세요.</p>
+      <h2>✈️ 여행지 날씨 찾기</h2>
+      <p>수업이 끝나면 어디로 떠나고 싶나요? 여행지의 현재 날씨부터 확인해 보세요.</p>
     </header>
 
     <CitySearchForm
       :current-query="currentQuery"
+      :search-mode="searchMode"
       :is-loading="isSearching"
+      @update:search-mode="changeSearchMode"
       @search-city="handleSearch"
     />
 

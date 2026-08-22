@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useConfigStore } from '@/stores/configStore'
 
 const props = defineProps({
@@ -10,6 +11,7 @@ const props = defineProps({
 })
 
 const configStore = useConfigStore()
+const router = useRouter()
 const selectedDuration = ref('5')
 const recommendationIndex = ref(0)
 
@@ -177,6 +179,10 @@ const showNextRecommendation = () => {
   recommendationIndex.value = (recommendationIndex.value + 1) % availableActivities.value.length
 }
 
+const goToTravelWeather = () => {
+  router.push({ name: 'weather-search' })
+}
+
 watch([selectedDuration, () => props.city?.id, () => props.city?.weatherMain], () => {
   recommendationIndex.value = 0
 })
@@ -186,7 +192,7 @@ watch([selectedDuration, () => props.city?.id, () => props.city?.weatherMain], (
   <el-card class="break-recommendation" shadow="never">
     <template #header>
       <div>
-        <h3>🎒 SKALA</h3>
+        <h3>🎒 SKALA 잠깐 쉬어가기</h3>
         <p v-if="city">
           {{ city.name }}에서 열심히 공부 중이군요. 현재 {{ city.status }}, {{ displayTemp
           }}{{ configStore.unitSymbol }}예요.
@@ -252,6 +258,15 @@ watch([selectedDuration, () => props.city?.id, () => props.city?.weatherMain], (
         </div>
       </section>
     </template>
+
+    <el-divider />
+    <section class="travel-invitation">
+      <div>
+        <strong>✈️ 잠깐의 휴식보다 여행이 필요하다면?</strong>
+        <p>떠나고 싶은 도시의 날씨부터 가볍게 확인해 보세요.</p>
+      </div>
+      <el-button type="success" plain @click="goToTravelWeather">여행지 날씨 찾기</el-button>
+    </section>
   </el-card>
 </template>
 
@@ -313,6 +328,19 @@ watch([selectedDuration, () => props.city?.id, () => props.city?.weatherMain], (
   margin-top: 14px;
 }
 
+.travel-invitation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.travel-invitation p {
+  margin-top: 4px;
+  color: #606266;
+}
+
 @media (max-width: 600px) {
   .duration-selector {
     display: grid;
@@ -321,6 +349,11 @@ watch([selectedDuration, () => props.city?.id, () => props.city?.weatherMain], (
 
   .duration-selector :deep(.el-radio-button__inner) {
     width: 100%;
+  }
+
+  .travel-invitation {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 </style>
