@@ -237,7 +237,7 @@ const clickDetail = (city) => {
       </aside>
 
       <BaseDashboardCard class="weather-panel">
-        <h3>🌆 지역별 날씨 현황</h3>
+        <h3 class="weather-panel-title">캠퍼스 날씨 현황</h3>
 
         <el-skeleton v-if="isLoading" :rows="5" animated />
         <el-alert
@@ -296,6 +296,16 @@ const clickDetail = (city) => {
 
 .standard-box :deep(.el-input-number) {
   width: 110px;
+}
+
+.weather-panel-title {
+  margin: 0 0 18px;
+  padding-bottom: 12px;
+  color: #1e293b;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.4;
+  border-bottom: 1px solid #dbe3ec;
 }
 
 .threshold-inputs {
