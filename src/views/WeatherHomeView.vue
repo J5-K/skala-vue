@@ -8,7 +8,6 @@ import { useConfigStore } from '@/stores/configStore'
 import { cityTargets } from '@/data/cityTargets'
 
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
-import CommuteGuide from '../components/exercise/CommuteGuide.vue'
 import SearchBar from '../components/exercise/SearchBar.vue'
 import WeatherCard from '../components/exercise/WeatherCard.vue'
 
@@ -95,8 +94,8 @@ const averageTemperature = computed(() => {
   return (total / weatherList.value.length).toFixed(1)
 })
 
-const myCity = computed(() => {
-  return weatherList.value.find((city) => city.id === locationStore.selectedCityId) ?? null
+const displayAverageTemperature = computed(() => {
+  return configStore.convertTemperature(Number(averageTemperature.value))
 })
 
 // 도시 좌표를 순회하며 세 도시의 실제 날씨를 동시에 요청합니다.
@@ -226,7 +225,9 @@ const clickDetail = (city) => {
               :closable="false"
               show-icon
             />
-            <p>전체 도시 평균 기온: {{ averageTemperature }}°C</p>
+            <p>
+              전체 도시 평균 기온: {{ displayAverageTemperature }}{{ configStore.unitSymbol }}
+            </p>
             <p v-if="isThresholdValid">
               추운 도시: {{ coldCityCount }}곳 · 적당한 도시: {{ mildCityCount }}곳 · 더운
               도시: {{ hotCityCount }}곳
@@ -267,8 +268,6 @@ const clickDetail = (city) => {
         </template>
       </BaseDashboardCard>
     </div>
-
-    <CommuteGuide :city="myCity" />
 
     <div class="status-bar">
       {{ selectedCityInfo }}

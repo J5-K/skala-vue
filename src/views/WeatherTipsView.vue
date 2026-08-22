@@ -2,8 +2,11 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSelectedCityWeather } from '@/composables/useSelectedCityWeather'
+import { useConfigStore } from '@/stores/configStore'
+import CommuteGuide from '@/components/exercise/CommuteGuide.vue'
 
 const router = useRouter()
+const configStore = useConfigStore()
 const {
   selectedCity: currentWeather,
   isLoading,
@@ -80,6 +83,12 @@ const currentTip = computed(() => {
   return tips.find((tip) => tip.name === 'cloud')
 })
 
+const displayTemp = computed(() => {
+  if (!currentWeather.value) return null
+
+  return configStore.convertTemperature(currentWeather.value.temp)
+})
+
 const goHome = () => {
   router.push({ name: 'weather-home' })
 }
@@ -116,8 +125,11 @@ watch(currentTip, (tip) => {
 
     <el-card v-else-if="currentTip" class="current-tip" shadow="never">
       <span class="eyebrow">지금 필요한 생활정보</span>
-      <h3>{{ currentTip.icon }} {{ currentWeather.name }}은 현재 {{ currentWeather.status }}</h3>
-      <p>현재 기온 {{ currentWeather.temp }}°C · 풍속 {{ currentWeather.wind }}m/s</p>
+      <h3>{{ currentTip.icon }} {{ currentWeather.name }}는(은) 현재 {{ currentWeather.status }}</h3>
+      <p>
+        현재 기온 {{ displayTemp }}{{ configStore.unitSymbol }} · 풍속
+        {{ currentWeather.wind }}m/s
+      </p>
       <el-alert
         :title="currentTip.message"
         :description="`준비사항: ${currentTip.preparation}`"
@@ -126,6 +138,8 @@ watch(currentTip, (tip) => {
         show-icon
       />
     </el-card>
+
+    <CommuteGuide v-if="currentWeather" :city="currentWeather" />
 
     <div class="all-tips">
       <h3>상황별 생활정보 모아보기</h3>
