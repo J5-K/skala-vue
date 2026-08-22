@@ -190,25 +190,6 @@ const clickDetail = (city) => {
   })
 }
 
-const findCity = (cityId) => {
-  return weatherList.value.find((city) => city.id === cityId)
-}
-
-const changeTemperature = ({ cityId, amount }) => {
-  const city = findCity(cityId)
-
-  if (city) {
-    city.temp += amount
-  }
-}
-
-const updateTemperature = ({ cityId, temperature }) => {
-  const city = findCity(cityId)
-
-  if (city) {
-    city.temp = temperature
-  }
-}
 </script>
 
 <template>
@@ -281,8 +262,6 @@ const updateTemperature = ({ cityId, temperature }) => {
             :is-my-location="locationStore.selectedCityId === item.id"
             @select-card="selectCard"
             @click-detail="clickDetail"
-            @change-temperature="changeTemperature"
-            @update-temperature="updateTemperature"
             @set-my-location="setMyLocation"
           />
 
