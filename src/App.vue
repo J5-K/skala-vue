@@ -1,5 +1,10 @@
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import UnitToggler from './components/exercise/UnitToggler.vue'
+
+const route = useRoute()
+const activeMenu = computed(() => route.path)
 </script>
 
 <template>
@@ -8,17 +13,23 @@ import UnitToggler from './components/exercise/UnitToggler.vue'
       <h1>⛅ RESTful SKALA</h1>
       <p>API로 날씨를 받고, 일상에서 쉼을 더하다</p>
     </header>
-    <nav class="navigation-bar">
-      <RouterLink to="/" class="nav-item">SKALA 오늘의 날씨</RouterLink>
-      <span class="divider">|</span>
-      <RouterLink to="/break" class="nav-item">잠깐 쉬어가기</RouterLink>
-      <span class="divider">|</span>
-      <RouterLink to="/city-search" class="nav-item">여행지 날씨</RouterLink>
-      <span class="divider">|</span>
-      <RouterLink to="/about" class="nav-item">서비스소개</RouterLink>
-      <span class="divider">|</span>
-      <RouterLink to="/tips" class="nav-item">날씨 생활 정보</RouterLink>
-      <UnitToggler />
+    <nav class="navigation-bar" aria-label="주요 메뉴">
+      <el-menu
+        class="main-menu"
+        mode="horizontal"
+        router
+        :default-active="activeMenu"
+        :ellipsis="false"
+      >
+        <el-menu-item index="/">오늘의 날씨</el-menu-item>
+        <el-menu-item index="/tips">생활정보</el-menu-item>
+        <el-menu-item index="/break">쉬어가기</el-menu-item>
+        <el-menu-item index="/city-search">여행지 날씨</el-menu-item>
+        <el-menu-item index="/about">서비스 소개</el-menu-item>
+      </el-menu>
+      <div class="unit-setting">
+        <UnitToggler />
+      </div>
     </nav>
 
     <main>
