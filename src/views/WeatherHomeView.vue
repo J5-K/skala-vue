@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { useLocationStore } from '@/stores/locationStore'
+import { cityTargets } from '@/data/cityTargets'
 
 import BaseDashboardCard from '../components/exercise/BaseDashboardCard.vue'
 import CommuteGuide from '../components/exercise/CommuteGuide.vue'
@@ -15,12 +16,6 @@ const locationStore = useLocationStore()
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather'
-
-const cityTargets = [
-  { id: 'city_01', name: '판교', lat: 37.3947, lon: 127.1112 },
-  { id: 'city_02', name: '울산', lat: 35.5384, lon: 129.3114 },
-  { id: 'city_03', name: '광주', lat: 35.1595, lon: 126.8526 },
-]
 
 // 모든 반응형 데이터는 부모 컴포넌트에서 관리합니다.
 const weatherList = ref([])
@@ -173,7 +168,7 @@ const selectCard = (city) => {
 }
 
 const setMyLocation = (city) => {
-  locationStore.selectLocation(city)
+  locationStore.selectLocation(city.id)
   selectedCityInfo.value = `${city.name}을(를) 내 지역으로 설정했습니다.`
 }
 
