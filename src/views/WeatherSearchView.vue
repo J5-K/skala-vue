@@ -2,16 +2,20 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import { travelRecommendations } from '@/data/travelRecommendations'
 
 import CitySearchForm from '@/components/exercise/CitySearchForm.vue'
 import CitySearchResult from '@/components/exercise/CitySearchResult.vue'
+import TravelRecommendations from '@/components/exercise/TravelRecommendations.vue'
 
 const route = useRoute()
 const router = useRouter()
 
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
+const PEXELS_API_KEY = import.meta.env.VITE_PEXELS_API_KEY
 const GEOCODING_URL = 'https://api.openweathermap.org/geo/1.0/direct'
 const WEATHER_URL = 'https://api.openweathermap.org/data/2.5/weather'
+const PEXELS_URL = 'https://api.pexels.com/v1/search'
 
 const currentQuery = ref('')
 const searchMode = ref('domestic')
@@ -20,6 +24,93 @@ const selectedWeather = ref(null)
 const isSearching = ref(false)
 const isWeatherLoading = ref(false)
 const errorMessage = ref('')
+const recommendations = ref([])
+const recommendationsMode = ref('')
+const areRecommendationsLoading = ref(false)
+const photoCache = new Map()
+let recommendationRequestId = 0
+
+const pickRandomCities = (cities, count) => {
+  const shuffledCities = [...cities]
+
+  for (let index = shuffledCities.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    ;[shuffledCities[index], shuffledCities[randomIndex]] = [
+      shuffledCities[randomIndex],
+      shuffledCities[index],
+    ]
+  }
+
+  return shuffledCities.slice(0, count)
+}
+
+const pickRandomPhoto = (photos, previousImageUrl) => {
+  if (photos.length === 0) return null
+
+  const newPhotos = photos.filter((photo) => photo.imageUrl !== previousImageUrl)
+  const candidates = newPhotos.length > 0 ? newPhotos : photos
+
+  return candidates[Math.floor(Math.random() * candidates.length)]
+}
+
+const loadCityPhoto = async (city, previousImageUrl) => {
+  if (photoCache.has(city.id)) {
+    const cachedPhoto = pickRandomPhoto(photoCache.get(city.id), previousImageUrl)
+    return cachedPhoto ? { ...city, ...cachedPhoto } : city
+  }
+
+  try {
+    const response = await axios.get(PEXELS_URL, {
+      headers: {
+        Authorization: PEXELS_API_KEY,
+      },
+      params: {
+        query: city.photoQuery,
+        orientation: 'landscape',
+        per_page: 3,
+      },
+    })
+    const photos = response.data.photos.map((photo) => ({
+      imageUrl: photo.src.large,
+      photographer: photo.photographer,
+      photoUrl: photo.url,
+    }))
+
+    photoCache.set(city.id, photos)
+
+    const selectedPhoto = pickRandomPhoto(photos, previousImageUrl)
+    return selectedPhoto ? { ...city, ...selectedPhoto } : city
+  } catch (error) {
+    console.error(`${city.name} 이미지 요청 실패:`, error)
+    return city
+  }
+}
+
+const refreshRecommendations = async () => {
+  const mode = searchMode.value
+  const selectedCities = pickRandomCities(travelRecommendations[mode], 3)
+  const requestId = ++recommendationRequestId
+  const previousImages = new Map(recommendations.value.map((city) => [city.id, city.imageUrl]))
+
+  recommendationsMode.value = mode
+  recommendations.value = selectedCities
+
+  if (!PEXELS_API_KEY) {
+    areRecommendationsLoading.value = false
+    return
+  }
+
+  areRecommendationsLoading.value = selectedCities.some((city) => !photoCache.has(city.id))
+
+  const citiesWithPhotos = await Promise.all(
+    selectedCities.map((city) => loadCityPhoto(city, previousImages.get(city.id))),
+  )
+
+  if (requestId === recommendationRequestId) {
+    recommendations.value = citiesWithPhotos
+    areRecommendationsLoading.value = false
+  }
+}
 
 const searchLocations = async (query) => {
   const normalizedQuery = query.trim().replace(/\s+/g, ' ')
@@ -127,6 +218,10 @@ watch(
     searchMode.value = mode === 'overseas' ? 'overseas' : 'domestic'
     const normalizedQuery = typeof query === 'string' ? query.trim() : ''
 
+    if (recommendationsMode.value !== searchMode.value) {
+      refreshRecommendations()
+    }
+
     if (normalizedQuery) {
       searchLocations(normalizedQuery)
     } else {
@@ -153,6 +248,13 @@ watch(
       :is-loading="isSearching"
       @update:search-mode="changeSearchMode"
       @search-city="handleSearch"
+    />
+
+    <TravelRecommendations
+      :recommendations="recommendations"
+      :is-loading="areRecommendationsLoading"
+      @select-city="handleSearch"
+      @refresh="refreshRecommendations"
     />
 
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>

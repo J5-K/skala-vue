@@ -10,7 +10,12 @@ cp .env.example .env.local
 npm run dev
 ```
 
-실행 전 `.env.local`의 `VITE_OPENWEATHER_API_KEY`에 발급받은 OpenWeather API 키를 입력합니다.
+실행 전 `.env.local`에 발급받은 OpenWeather와 Pexels API 키를 입력합니다.
+
+```env
+VITE_OPENWEATHER_API_KEY=발급받은_OpenWeather_키
+VITE_PEXELS_API_KEY=발급받은_Pexels_키
+```
 
 ## 품질 점검 및 배포
 
@@ -25,7 +30,7 @@ npm run build
 - `npm run build`로 production build를 실행해 `dist` 정적 파일이 정상 생성되는지 확인했습니다.
 - 로컬 환경과 동일하게 동작하는지 확인한 뒤 GitHub 저장소를 Vercel에 연결했습니다.
 - Vercel의 Build Command는 `npm run build`, Output Directory는 `dist`로 설정했습니다.
-- OpenWeather API 키는 Vercel Production Environment Variables에 따로 등록했습니다.
+- OpenWeather와 Pexels API 키는 Vercel Production Environment Variables에 따로 등록했습니다.
 - 배포 후 실시간 날씨, 상세 화면, 도시 검색, 휴식 도우미와 라우트 이동을 다시 확인했습니다.
 
 배포 결과는 [SKALA 날씨 과제 실행하기](https://skala-vue-gules-two.vercel.app/)에서 확인할 수 있습니다. 로컬의 `.env.local`은 Git에서 제외하고, 실제 배포 환경에서는 Vercel 환경변수를 사용했습니다.
@@ -358,6 +363,19 @@ Day 1·2에는 `v-model`, 이벤트 처리와 반응형 변화를 직접 확인�
 
 기존의 `RouterLink`와 구분선 대신 router 기능을 지원하는 `el-menu`를 사용했습니다. 현재 페이지가 자동으로 강조되도록 하고, 화면 이동과 역할이 다른 날씨 단위 변경 버튼은 오른쪽 설정 영역으로 분리했습니다. 모바일에서도 전체 메뉴가 보이도록 메뉴 높이와 글자 크기를 조정했습니다.
 
+### 22. 사진과 함께 보는 랜덤 여행지 추천
+
+여행지를 직접 검색하는 기능은 있었지만, 아직 목적지를 정하지 못한 경우에는 검색창부터 사용하는 것이 어렵다고 느꼈습니다. 국내·해외 모드에 맞는 도시를 먼저 추천하고, 마음에 드는 도시의 날씨를 바로 확인할 수 있도록 기능을 확장했습니다.
+
+- 국내와 해외 추천 후보를 각각 15개씩 구성하고 그중 3개를 중복 없이 랜덤으로 표시했습니다.
+- 추천 카드를 누르면 기존 도시 검색 기능으로 연결되도록 해 이미 구현한 OpenWeather 검색 흐름을 재사용했습니다.
+- Pexels API로 도시 이름과 관련된 사진을 불러오고 사진 작가와 출처를 함께 표시했습니다.
+- 도시별 사진을 3장씩 받아 한 장을 랜덤으로 선택하고, 이미 받아온 사진은 메모리에 저장해 같은 도시가 다시 나올 때 불필요한 API 요청을 줄였습니다.
+- API 키가 없거나 사진을 불러오지 못한 경우에는 지도 핀과 안내 문구가 있는 기본 화면을 표시했습니다.
+- 국내 추천 도시 15개는 OpenWeather Geocoding API에서 실제로 검색되는지 확인했습니다.
+
+이번 기능을 구현하면서 같은 여행지 검색 화면에서도 OpenWeather API는 날씨 검색을, Pexels API는 화면의 시각 정보를 담당할 수 있다는 점을 확인했습니다. 또한 API를 호출할 때마다 새로 요청하기보다 이미 받은 결과를 재사용하는 방법도 함께 적용해 보았습니다.
+
 ### Day 3 핵심 문법
 
 | 추가 기능             | 적용 내용                                          |
@@ -402,6 +420,10 @@ Day 1·2에는 `v-model`, 이벤트 처리와 반응형 변화를 직접 확인�
 | 서비스 기능 소개 구성 | `el-card`, `el-steps`, `el-descriptions`           |
 | 트러블슈팅 화면 구성   | `el-collapse`                                      |
 | 내비게이션 UI          | `el-menu`, Vue Router                              |
+| 랜덤 여행지 선택       | 배열 복사, Fisher–Yates 방식, `Math.random()`      |
+| 도시 사진 요청         | Pexels API, Axios, 환경변수                        |
+| 사진 요청 재사용       | `Map`, 메모리 캐시                                 |
+| 사진 오류 대체 화면    | `v-if`, 이미지 `error` 이벤트                      |
 
 > Day 3는 진행 중이며, 이후 구현 내용은 같은 항목에 이어서 추가할 예정입니다.
 
@@ -426,6 +448,8 @@ Day 1·2에는 `v-model`, 이벤트 처리와 반응형 변화를 직접 확인�
 - 판교·울산·광주 내 지역 설정 및 생활정보 화면의 날씨 기반 이동 방식 안내
 - 휴식 시간과 내 지역 날씨를 반영한 SKALA 휴식 활동 추천
 - 음악 활동의 날씨별 YouTube 검색 연결
+- 국내·해외 추천 후보 중 여행지 3곳 랜덤 추천
+- Pexels 도시 사진·출처 표시 및 이미지 실패 시 기본 화면 제공
 
 ## 수업 실습 코드 정리
 
@@ -491,6 +515,7 @@ src/components/exercise/
 ├── WeatherForecast.vue
 ├── CitySearchForm.vue
 ├── CitySearchResult.vue
+├── TravelRecommendations.vue
 ├── CommuteGuide.vue
 └── BreakRecommendation.vue
 
@@ -503,6 +528,10 @@ src/components/practices/
 src/stores/
 ├── configStore.js
 └── locationStore.js
+
+src/data/
+├── cityTargets.js
+└── travelRecommendations.js
 
 .env.example
 
