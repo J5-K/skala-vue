@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useConfigStore } from '@/stores/configStore'
+import { cityTargets } from '@/data/cityTargets'
 import axios from 'axios'
 
 import WeatherForecast from '@/components/exercise/WeatherForecast.vue'
@@ -13,12 +14,6 @@ const configStore = useConfigStore()
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather'
 const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast'
-
-const cityCoordinates = {
-  city_01: { lat: 37.3947, lon: 127.1112 },
-  city_02: { lat: 35.5384, lon: 129.3114 },
-  city_03: { lat: 35.1595, lon: 126.8526 },
-}
 
 const apiDetails = ref(null)
 const forecastList = ref([])
@@ -59,11 +54,6 @@ const cityData = computed(() => {
   return {
     ...original,
     ...apiDetails.value,
-    temp:
-      route.query.temp !== undefined
-        ? Number(route.query.temp)
-        : (apiDetails.value?.temp ?? original.temp),
-    status: route.query.status ?? apiDetails.value?.status ?? original.status,
   }
 })
 
@@ -121,12 +111,12 @@ const createDailyForecast = (forecastData) => {
 }
 
 const fetchDetailWeather = async (cityId) => {
-  const coordinates = cityCoordinates[cityId]
+  const cityTarget = cityTargets.find((city) => city.id === cityId)
   apiDetails.value = null
   forecastList.value = []
   errorMessage.value = ''
 
-  if (!coordinates) {
+  if (!cityTarget) {
     return
   }
 
@@ -134,8 +124,8 @@ const fetchDetailWeather = async (cityId) => {
 
   try {
     const requestParams = {
-      lat: coordinates.lat,
-      lon: coordinates.lon,
+      lat: cityTarget.lat,
+      lon: cityTarget.lon,
       appid: API_KEY,
       units: 'metric',
       lang: 'kr',

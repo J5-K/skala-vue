@@ -178,10 +178,6 @@ const clickDetail = (city) => {
     params: {
       cityId: city.id,
     },
-    query: {
-      temp: city.temp,
-      status: city.status,
-    },
   })
 }
 

@@ -152,15 +152,12 @@ WeatherParent가 상태 변경
 - 페이지를 새로고침해도 URL의 검색어를 읽어 검색 상태를 복원합니다.
 - 검색 기록을 불필요하게 쌓지 않도록 검색 중에는 `replace()`를 사용했습니다.
 
-### 3. 변경된 날씨를 상세 페이지에 연동
+### 3. 상세 페이지에 최신 날씨 연결
 
 - 상세보기 클릭 시 도시 ID를 `/weather/:cityId`의 동적 params로 전달합니다.
-- 홈에서 변경한 현재 기온과 날씨 상태를 query로 함께 전달합니다.
-- 상세 화면에서는 params로 도시를 찾고 query를 조합해 변경된 값을 표시합니다.
-
-```text
-/weather/city_01?temp=30&status=맑음
-```
+- 상세 화면에서는 도시 ID에 맞는 좌표를 `cityTargets.js`에서 찾아 현재 날씨와 5일 예보를 다시 요청합니다.
+- 홈에서 전달받은 이전 값을 사용하는 대신, 상세 페이지에 진입한 시점의 최신 API 결과를 표시하도록 변경했습니다.
+- API 요청에 실패하면 화면이 비어 있지 않도록 기본 정보를 대신 보여줍니다.
 
 ### 4. 직접 추가한 화면과 예외 처리
 
@@ -189,7 +186,7 @@ WeatherParent가 상태 변경
 - 상세 화면에서는 선택한 도시 좌표로 최신 기상 정보를 다시 요청합니다.
 - 일출·일몰 Unix 시간을 API의 timezone과 조합해 도시 현지 시각으로 표시합니다.
 - 상세 API 요청 중에는 로딩 상태를, 실패 시에는 안내와 기본 데이터를 표시합니다.
-- 홈에서 직접 변경한 온도와 상태는 기존 URL query 값을 우선해 유지합니다.
+- 판교·울산·광주의 ID와 좌표는 `cityTargets.js`에서 공통으로 관리해 홈과 상세 화면에서 함께 사용합니다.
 
 ### 8. OpenWeather 5일 예보 API 연동
 
@@ -361,7 +358,7 @@ Day 1·2에는 `v-model`, 이벤트 처리와 반응형 변화를 직접 확인�
 | 화면 전환             | `RouterLink`, `RouterView`                         |
 | 코드 분할             | 동적 `import()`                                    |
 | 동적 상세 경로        | `route.params`, `router.push()`                    |
-| 화면 간 날씨 전달     | `route.query`                                      |
+| 상세 날씨 데이터 조회 | `route.params`, `cityTargets`, Axios               |
 | 검색 상태 유지        | `watch()`, `router.replace()`                      |
 | 잘못된 주소 처리      | Catch-all Route                                    |
 | 전역 단위 상태        | `defineStore()`, Pinia                             |
